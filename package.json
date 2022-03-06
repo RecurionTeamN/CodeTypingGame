@@ -25,6 +25,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "format": "eslint --ext .js,.ts,.jsx,.tsx --ignore-path .gitignore . && prettier \"**/*.{js,jsx,ts,tsx}\" --write",
+    "prepare": "husky install",
     "lint-staged": "lint-staged"
   },
   "lint-staged": {
