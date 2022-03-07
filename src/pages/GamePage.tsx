@@ -4,7 +4,7 @@ import { StyledEngineProvider } from "@mui/material/styles";
 import { makeStyles } from "@mui/styles";
 import { Typography, Box } from "@mui/material";
 
-import formatTime from "../utils/utils";
+import formatTime from "../utils/formatTime";
 
 const useStyles = makeStyles(() => ({
   statsContainer: {
@@ -59,14 +59,14 @@ const GamePage = () => {
     "import React, { useState, useEffect, useRef } from 'react'; const [isMissType, setIsMissType] = useState<boolean>(false);";
 
   // const [typingText, setTypingText] = useState("");
-  const [currentIndex, setCurrentIndex] = useState<number>(0);
-  const [isMissType, setIsMissType] = useState<boolean>(false);
-  const [missCount, setMissCount] = useState<number>(0);
-  const [finished, setFinished] = useState<boolean>(false);
-  const [started, setStarted] = useState<boolean>(false);
-  const [timeTyping, setTimeTyping] = useState<number>(0);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isMissType, setIsMissType] = useState(false);
+  const [missCount, setMissCount] = useState(0);
+  const [finished, setFinished] = useState(false);
+  const [started, setStarted] = useState(false);
+  const [timeTyping, setTimeTyping] = useState(0);
 
-  const timer = useRef<ReturnType<typeof setInterval> | null>(null);
+  const timer = useRef<NodeJS.Timer | null>(null);
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLDivElement>) => {
     // eslint-disable-next-line no-console
