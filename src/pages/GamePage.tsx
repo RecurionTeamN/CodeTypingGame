@@ -1,10 +1,8 @@
 import React, { useState, useRef } from "react";
 import { StyledEngineProvider } from "@mui/material/styles";
-
 import { makeStyles } from "@mui/styles";
-import { Typography, Box } from "@mui/material";
-
-import formatTime from "../utils/formatTime";
+import { Typography } from "@mui/material";
+import GameHeader from "../components/GameHeader";
 
 const useStyles = makeStyles(() => ({
   statsContainer: {
@@ -17,7 +15,6 @@ const useStyles = makeStyles(() => ({
     margin: "0 30px",
   },
   container: {
-    height: "100vh",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
@@ -25,29 +22,31 @@ const useStyles = makeStyles(() => ({
   },
   textBox: {
     padding: "30px",
+    marginTop: "30px",
     marginBottom: "30px",
     maxWidth: "70%",
+    cursor: "pointer",
   },
   blueFont: {
     color: "#2bbeed",
     display: "inline",
-    fontSize: "50px",
+    fontSize: "30px",
   },
   redFont: {
     backgroundColor: "#e0e0e0",
     color: "red",
     display: "inline",
-    fontSize: "50px",
+    fontSize: "30px",
   },
   greyFont: {
     color: "grey",
     display: "inline",
-    fontSize: "50px",
+    fontSize: "30px",
   },
   blackFont: {
     backgroundColor: "#e0e0e0",
     display: "inline",
-    fontSize: "50px",
+    fontSize: "30px",
   },
 }));
 
@@ -94,13 +93,22 @@ const GamePage = () => {
     }
   };
 
+  // ゲームの初期化
+  const reset = () => {
+    clearInterval(timer.current as NodeJS.Timeout);
+    setTimeTyping(0);
+
+    setCurrentIndex(0);
+    setIsMissType(false);
+    setMissCount(0);
+    setFinished(false);
+    setStarted(false);
+  };
+
   return (
     <StyledEngineProvider injectFirst>
+      <GameHeader timeTyping={timeTyping} missCount={missCount} reset={reset} />
       <div className={classes.container}>
-        <Box className={classes.statsContainer}>
-          <Typography className={classes.stats}>タイム: {formatTime(timeTyping)}</Typography>
-          <Typography className={classes.stats}>ミスタイプ: {missCount}回</Typography>
-        </Box>
         <div onKeyPress={(e) => handleKeyPress(e)} tabIndex={-1} className={classes.textBox} aria-hidden="true">
           {/* for correct letters */}
           <Typography className={classes.blueFont}>{typingText.slice(0, currentIndex)}</Typography>
