@@ -59,7 +59,7 @@ const GamePage = () => {
 
   // temporary typing text
   const typingText =
-    "import React, { useState, useEffect, useRef } from 'react';\nconst [isMissType, setIsMissType] = useState<boolean>(false);\nif (!started) {\n\tsetStarted(true);\n}\nconst timer = useRef<NodeJS.Timer | null>(null);";
+    "import React, { useState, useEffect, useRef } from 'react';\nconst [isMissType, setIsMissType] = useState<boolean>(false);\nif (!started) {\n  setStarted(true);\n}\nconst timer = useRef<NodeJS.Timer | null>(null);";
   // const typingText = "import React\n";
 
   // const [typingText, setTypingText] = useState("");
@@ -93,7 +93,7 @@ const GamePage = () => {
         // while ループで改行後に続くタブを i を使ってスキップする
         let i = 1;
         while (currentIndex + i < typingText.length) {
-          if (typingText[currentIndex + i] === "\t") i += 1;
+          if (typingText[currentIndex + i] === "\t" || typingText[currentIndex + i] === " ") i += 1;
           else break;
         }
 
