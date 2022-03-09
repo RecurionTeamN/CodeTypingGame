@@ -18,13 +18,12 @@ type Props = {
   data: KeyData[];
 };
 
-const FingerStatistics = (props: Props) => {
-  const { data } = props;
+const FingerStatistics: React.VFC<Props> = ({ data }) => {
   // キー毎の情報を指ごとの情報に変換する
-  // 後述のObject.keys()後のforEach()で型エラーにならないようにHandとFingerにstring型を追加しておく
+  // Object.keys()の返り値がstring型になるので型アサーションを使用する
   const fingerData: {
-    [key1 in Hand | string]: {
-      [key2 in Finger | string]: { pushCountSum: number; missCountSum: number; timeSecSum: number };
+    [key1 in Hand]: {
+      [key2 in Finger]: { pushCountSum: number; missCountSum: number; timeSecSum: number };
     };
   } = {
     left: {
@@ -48,10 +47,10 @@ const FingerStatistics = (props: Props) => {
     fingerData[element.hand][element.finger].timeSecSum += element.timeSecCount;
   });
   // 指ごとの統計情報を表示する
-  // 指ごとの統計情報に親指は不要なので各手の指配列をslice(1)する
-  const statistics = Object.keys(fingerData).map((hand) => {
-    const eachHandResults = Object.keys(fingerData[hand])
-      .slice(1)
+  // 指ごとの統計情報に親指は不要なので各手の指配列をfilter()する
+  const statistics = (Object.keys(fingerData) as Hand[]).map((hand) => {
+    const eachHandResults = (Object.keys(fingerData[hand]) as Finger[])
+      .filter((finger) => finger !== "thumb")
       .map((finger) => {
         const currFinData = fingerData[hand][finger];
         const accuracy = Math.floor(

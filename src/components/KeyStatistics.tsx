@@ -17,8 +17,7 @@ type Props = {
   data: KeyData[];
 };
 
-const KeyStatistics = (props: Props) => {
-  const { data } = props;
+const KeyStatistics: React.VFC<Props> = ({ data }) => {
   const statistics = data.map((keyData) => {
     const accuracy = Math.floor(((keyData.pushCount - keyData.missCount) / keyData.pushCount) * 100);
     const speed = (keyData.pushCount - keyData.missCount) / (keyData.timeSecCount / 60);

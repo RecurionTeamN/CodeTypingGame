@@ -10,8 +10,7 @@ type Props = {
   data: Best[];
 };
 
-const BestScores = (props: Props) => {
-  const { data } = props;
+const BestScores: React.VFC<Props> = ({ data }) => {
   const results = data.map((result) => (
     <li key={result.language}>
       {result.language}: {result.accuracy}%, {result.speed}wpm

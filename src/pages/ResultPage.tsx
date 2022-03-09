@@ -73,4 +73,3 @@ const ResultPage = () => (
 );
 
 export default ResultPage;
-export type { Result, KeyData, Hand, Finger, Best };
