@@ -25,28 +25,32 @@ const useStyles = makeStyles(() => ({
     marginTop: "30px",
     marginBottom: "30px",
     maxWidth: "70%",
+    whiteSpace: "pre-wrap",
     cursor: "pointer",
+    "&:focus": {
+      outline: "none",
+    },
   },
-  blueFont: {
-    color: "#2bbeed",
+  greenFont: {
+    color: "#33CC33",
     display: "inline",
-    fontSize: "30px",
+    fontSize: "25px",
   },
   redFont: {
     backgroundColor: "#e0e0e0",
     color: "red",
     display: "inline",
-    fontSize: "30px",
+    fontSize: "25px",
   },
   greyFont: {
     color: "grey",
     display: "inline",
-    fontSize: "30px",
+    fontSize: "25px",
   },
   blackFont: {
     backgroundColor: "#e0e0e0",
     display: "inline",
-    fontSize: "30px",
+    fontSize: "25px",
   },
 }));
 
@@ -55,7 +59,8 @@ const GamePage = () => {
 
   // temporary typing text
   const typingText =
-    "import React, { useState, useEffect, useRef } from 'react'; const [isMissType, setIsMissType] = useState<boolean>(false);";
+    "import React, { useState, useEffect, useRef } from 'react';\nconst [isMissType, setIsMissType] = useState<boolean>(false);\nif (!started) {\n\tsetStarted(true);\n}\nconst timer = useRef<NodeJS.Timer | null>(null);";
+  // const typingText = "import React\n";
 
   // const [typingText, setTypingText] = useState("");
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -80,7 +85,29 @@ const GamePage = () => {
       }, 10);
     }
 
-    if (e.key === typingText[currentIndex]) {
+    // 改行の処理
+    if (typingText[currentIndex] === "\n") {
+      if (e.key === "Enter") {
+        setIsMissType(false);
+
+        // while ループで改行後に続くタブを i を使ってスキップする
+        let i = 1;
+        while (currentIndex + i < typingText.length) {
+          if (typingText[currentIndex + i] === "\t") i += 1;
+          else break;
+        }
+
+        if (currentIndex + i >= typingText.length) {
+          clearInterval(timer.current as NodeJS.Timer);
+          setFinished(true);
+        } else {
+          setCurrentIndex(currentIndex + i);
+        }
+      } else {
+        setIsMissType(true);
+        setMissCount(missCount + 1);
+      }
+    } else if (e.key === typingText[currentIndex]) {
       setIsMissType(false);
       setCurrentIndex(currentIndex + 1);
       if (currentIndex + 1 >= typingText.length) {
@@ -111,7 +138,7 @@ const GamePage = () => {
       <div className={classes.container}>
         <div onKeyPress={(e) => handleKeyPress(e)} tabIndex={-1} className={classes.textBox} aria-hidden="true">
           {/* for correct letters */}
-          <Typography className={classes.blueFont}>{typingText.slice(0, currentIndex)}</Typography>
+          <Typography className={classes.greenFont}>{typingText.slice(0, currentIndex)}</Typography>
 
           {/* for incorrect letters */}
           {isMissType ? (
