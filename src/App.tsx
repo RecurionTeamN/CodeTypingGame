@@ -7,7 +7,7 @@ import GamePage from "./pages/GamePage";
 const App = () => (
   <div>
     <HomePage/>
-    {/* <GamePage /> */}
+    <GamePage />
   </div>
 );
 
