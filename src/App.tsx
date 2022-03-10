@@ -4,10 +4,9 @@ import HomePage from "./pages/HomePage";
 import GamePage from "./pages/GamePage";
 import ResultPage from "./pages/ResultPage";
 
-
 const App = () => (
   <div>
-    <HomePage/>
+    <HomePage />
     <GamePage />
     <ResultPage />
   </div>
