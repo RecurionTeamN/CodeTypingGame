@@ -1,8 +1,9 @@
 import React, { useState, useRef } from "react";
 import { StyledEngineProvider } from "@mui/material/styles";
 import { makeStyles } from "@mui/styles";
-import { Typography } from "@mui/material";
+import { Typography, Card, CardContent } from "@mui/material";
 import GameHeader from "../components/GameHeader";
+import SuccessModal from "../components/SuccessModal";
 
 const useStyles = makeStyles(() => ({
   statsContainer: {
@@ -21,10 +22,8 @@ const useStyles = makeStyles(() => ({
     justifyContent: "center",
   },
   textBox: {
-    padding: "30px",
-    marginTop: "30px",
-    marginBottom: "30px",
-    maxWidth: "70%",
+    padding: "20px",
+    marginTop: "5px",
     whiteSpace: "pre-wrap",
     cursor: "pointer",
     "&:focus": {
@@ -52,6 +51,10 @@ const useStyles = makeStyles(() => ({
     display: "inline",
     fontSize: "25px",
   },
+  card: {
+    marginTop: "20px",
+    minWidth: "70%",
+  },
 }));
 
 const GamePage = () => {
@@ -69,6 +72,7 @@ const GamePage = () => {
   const [finished, setFinished] = useState(false);
   const [started, setStarted] = useState(false);
   const [timeTyping, setTimeTyping] = useState(0);
+  const [successModalOpen, setSuccessModalOpen] = useState(false);
 
   const timer = useRef<NodeJS.Timer | null>(null);
 
@@ -100,6 +104,7 @@ const GamePage = () => {
         if (currentIndex + i >= typingText.length) {
           clearInterval(timer.current as NodeJS.Timer);
           setFinished(true);
+          setSuccessModalOpen(true);
         } else {
           setCurrentIndex(currentIndex + i);
         }
@@ -113,6 +118,7 @@ const GamePage = () => {
       if (currentIndex + 1 >= typingText.length) {
         clearInterval(timer.current as NodeJS.Timeout);
         setFinished(true);
+        setSuccessModalOpen(true);
       }
     } else {
       setIsMissType(true);
@@ -136,21 +142,37 @@ const GamePage = () => {
     <StyledEngineProvider injectFirst>
       <GameHeader timeTyping={timeTyping} missCount={missCount} reset={reset} />
       <div className={classes.container}>
-        <div onKeyPress={(e) => handleKeyPress(e)} tabIndex={-1} className={classes.textBox} aria-hidden="true">
-          {/* for correct letters */}
-          <Typography className={classes.greenFont}>{typingText.slice(0, currentIndex)}</Typography>
+        <Card className={classes.card}>
+          <CardContent>
+            <div onKeyPress={(e) => handleKeyPress(e)} tabIndex={-1} className={classes.textBox} aria-hidden="true">
+              {/* for correct letters */}
+              <Typography className={classes.greenFont}>{typingText.slice(0, currentIndex)}</Typography>
 
-          {/* for incorrect letters */}
-          {isMissType ? (
-            <Typography className={classes.redFont}>{typingText[currentIndex]}</Typography>
-          ) : (
-            <Typography className={classes.blackFont}>{typingText[currentIndex]}</Typography>
-          )}
+              {/* for incorrect letters */}
+              {isMissType ? (
+                <Typography className={classes.redFont}>{typingText[currentIndex]}</Typography>
+              ) : (
+                <Typography className={classes.blackFont}>{typingText[currentIndex]}</Typography>
+              )}
 
-          {/* for remaining letters */}
-          <Typography className={classes.greyFont}>{typingText.slice(currentIndex + 1, typingText.length)}</Typography>
-        </div>
+              {/* for remaining letters */}
+              <Typography className={classes.greyFont}>
+                {typingText.slice(currentIndex + 1, typingText.length)}
+              </Typography>
+            </div>
+          </CardContent>
+        </Card>
       </div>
+
+      <SuccessModal
+        result={{
+          timeTyping,
+          missCount,
+          textLength: typingText.length,
+        }}
+        successModalOpen={successModalOpen}
+        successModalClose={() => setSuccessModalOpen(false)}
+      />
     </StyledEngineProvider>
   );
 };
