@@ -1,5 +1,7 @@
 import { Modal, SelectChangeEvent, Button, TextField, Container, Stack, Box } from "@mui/material";
 import React, { useState, useRef } from "react";
+import { Octokit } from "@octokit/rest";
+import { Base64 } from "js-base64";
 import MySelect from "../components/MySelect";
 import TypingLetters from "../components/TypingLetters";
 
@@ -24,6 +26,7 @@ const HomePage = () => {
   const codeRef = useRef("");
   const maxLenRef = useRef("");
   const personalCodeRef = useRef("");
+  const githubContentRef = useRef("");
 
   const [keyboard, setKeyboard] = useState("");
   const [language, setLanguage] = useState("");
@@ -55,10 +58,50 @@ const HomePage = () => {
     setPesonalLanguage(event.target.value);
   };
 
+  const handleGithubURLChange = (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>): void => {
+    const content = () => {
+      const parameters = event.target.value.split("/");
+      const owner = parameters[3];
+      const repo = parameters[4];
+      const path = parameters.slice(7, parameters.length).join("/");
+
+      const octokit = new Octokit();
+      // octokit.repos.getContent の呼び出しに awaitを使う場合、HomePageコンポーネントをasyncで修飾する必要がある
+      // ->この時の対応がわからないため暫定的にawaitを使わずthen文で対応
+      const data = octokit.repos
+        .getContent({
+          owner,
+          repo,
+          path,
+        })
+        .then((response) => {
+          const contentStr = JSON.stringify(response.data);
+          if (contentStr.indexOf('"content":"') !== -1) {
+            // URLがrepository内の末端ファイルを指す場合にのみ
+            // jsonデータからソースコードの情報を抜き出す
+            const startIndex = contentStr.indexOf('content":"');
+            const endIndex = contentStr.indexOf('","encoding');
+            const shift = 'content":"'.length;
+            const updatedContentStr = contentStr.substring(startIndex + shift, endIndex).replace(/\\n/g, "");
+
+            githubContentRef.current = Base64.decode(updatedContentStr);
+          } else {
+            // eslint-disable-next-line no-alert
+            alert("format error");
+          }
+        })
+        .catch((response) => {
+          // eslint-disable-next-line no-alert
+          alert(response);
+        });
+    };
+    content();
+  };
+
   const toggleModal = (): void => setIsOpen(!isOpen);
 
   return (
-    <Container maxWidth="md" sx={{ pt: 3 }}>
+    <Container maxWidth="md" sx={{ pt: 5, pb: 5 }}>
       <div style={{ marginBottom: "20px" }}>
         <p>Confirm states</p>
         {`Name: ${nameRef.current}`}
@@ -72,6 +115,10 @@ const HomePage = () => {
         {`MaxLength: ${maxLenRef.current}`}
         <br />
         {`Personal Setting: ${JSON.stringify(personalSetting)}`}
+        <br />
+        {/* githubContentRef.currentをそのまま文字列として出力するとインデントが崩れるのでtextareaのプロパティとして文字列を表示 */}
+        <p style={{ margin: 0 }}>github code: </p>
+        <textarea value={githubContentRef.current} />
         <br />
       </div>
 
@@ -145,6 +192,15 @@ const HomePage = () => {
             </Box>
           </div>
         </Modal>
+
+        <TextField
+          inputRef={githubContentRef}
+          required
+          label="GitHub Code URL"
+          onChange={(event) => {
+            handleGithubURLChange(event);
+          }}
+        />
 
         <TextField
           inputRef={maxLenRef}
