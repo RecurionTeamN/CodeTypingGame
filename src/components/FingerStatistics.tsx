@@ -58,7 +58,7 @@ const FingerStatistics: React.VFC<Props> = ({ data }) => {
         );
         const speed = (currFinData.pushCountSum - currFinData.missCountSum) / (currFinData.timeSecSum / 60);
         return (
-          <div>
+          <div key={finger}>
             <p>
               {finger}: {accuracy}%, {speed}wpm
             </p>
@@ -66,7 +66,7 @@ const FingerStatistics: React.VFC<Props> = ({ data }) => {
         );
       });
     return (
-      <div>
+      <div key={hand}>
         <h4>{hand}</h4>
         {eachHandResults}
       </div>
