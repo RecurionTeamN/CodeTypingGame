@@ -1,7 +1,7 @@
 import React, { useState, useRef } from "react";
 import { StyledEngineProvider } from "@mui/material/styles";
 import { makeStyles } from "@mui/styles";
-import { Typography } from "@mui/material";
+import { Typography, Card, CardContent } from "@mui/material";
 import GameHeader from "../components/GameHeader";
 
 const useStyles = makeStyles(() => ({
@@ -21,10 +21,8 @@ const useStyles = makeStyles(() => ({
     justifyContent: "center",
   },
   textBox: {
-    padding: "30px",
-    marginTop: "30px",
-    marginBottom: "30px",
-    maxWidth: "70%",
+    padding: "20px",
+    marginTop: "5px",
     whiteSpace: "pre-wrap",
     cursor: "pointer",
     "&:focus": {
@@ -51,6 +49,10 @@ const useStyles = makeStyles(() => ({
     backgroundColor: "#e0e0e0",
     display: "inline",
     fontSize: "25px",
+  },
+  card: {
+    marginTop: "20px",
+    minWidth: "70%",
   },
 }));
 
@@ -136,20 +138,26 @@ const GamePage = () => {
     <StyledEngineProvider injectFirst>
       <GameHeader timeTyping={timeTyping} missCount={missCount} reset={reset} />
       <div className={classes.container}>
-        <div onKeyPress={(e) => handleKeyPress(e)} tabIndex={-1} className={classes.textBox} aria-hidden="true">
-          {/* for correct letters */}
-          <Typography className={classes.greenFont}>{typingText.slice(0, currentIndex)}</Typography>
+        <Card className={classes.card}>
+          <CardContent>
+            <div onKeyPress={(e) => handleKeyPress(e)} tabIndex={-1} className={classes.textBox} aria-hidden="true">
+              {/* for correct letters */}
+              <Typography className={classes.greenFont}>{typingText.slice(0, currentIndex)}</Typography>
 
-          {/* for incorrect letters */}
-          {isMissType ? (
-            <Typography className={classes.redFont}>{typingText[currentIndex]}</Typography>
-          ) : (
-            <Typography className={classes.blackFont}>{typingText[currentIndex]}</Typography>
-          )}
+              {/* for incorrect letters */}
+              {isMissType ? (
+                <Typography className={classes.redFont}>{typingText[currentIndex]}</Typography>
+              ) : (
+                <Typography className={classes.blackFont}>{typingText[currentIndex]}</Typography>
+              )}
 
-          {/* for remaining letters */}
-          <Typography className={classes.greyFont}>{typingText.slice(currentIndex + 1, typingText.length)}</Typography>
-        </div>
+              {/* for remaining letters */}
+              <Typography className={classes.greyFont}>
+                {typingText.slice(currentIndex + 1, typingText.length)}
+              </Typography>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </StyledEngineProvider>
   );
