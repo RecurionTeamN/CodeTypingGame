@@ -13,7 +13,7 @@ type Result = {
 type Props = {
   result: Result;
   successModalOpen: boolean;
-  successModalClose: VoidFunction;
+  successModalClose: () => void;
 };
 
 const useStyles = makeStyles((theme) => ({
