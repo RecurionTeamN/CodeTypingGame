@@ -3,6 +3,7 @@ import { StyledEngineProvider } from "@mui/material/styles";
 import { makeStyles } from "@mui/styles";
 import { Typography, Card, CardContent } from "@mui/material";
 import GameHeader from "../components/GameHeader";
+import SuccessModal from "../components/SuccessModal";
 
 const useStyles = makeStyles(() => ({
   statsContainer: {
@@ -71,6 +72,7 @@ const GamePage = () => {
   const [finished, setFinished] = useState(false);
   const [started, setStarted] = useState(false);
   const [timeTyping, setTimeTyping] = useState(0);
+  const [successModalOpen, setSuccessModalOpen] = useState(false);
 
   const timer = useRef<NodeJS.Timer | null>(null);
 
@@ -102,6 +104,7 @@ const GamePage = () => {
         if (currentIndex + i >= typingText.length) {
           clearInterval(timer.current as NodeJS.Timer);
           setFinished(true);
+          setSuccessModalOpen(true);
         } else {
           setCurrentIndex(currentIndex + i);
         }
@@ -115,6 +118,7 @@ const GamePage = () => {
       if (currentIndex + 1 >= typingText.length) {
         clearInterval(timer.current as NodeJS.Timeout);
         setFinished(true);
+        setSuccessModalOpen(true);
       }
     } else {
       setIsMissType(true);
@@ -159,6 +163,16 @@ const GamePage = () => {
           </CardContent>
         </Card>
       </div>
+
+      <SuccessModal
+        result={{
+          timeTyping,
+          missCount,
+          textLength: typingText.length,
+        }}
+        successModalOpen={successModalOpen}
+        successModalClose={() => setSuccessModalOpen(false)}
+      />
     </StyledEngineProvider>
   );
 };
