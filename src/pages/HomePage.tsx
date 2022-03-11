@@ -68,6 +68,8 @@ const HomePage = () => {
       const octokit = new Octokit();
       // octokit.repos.getContent の呼び出しに awaitを使う場合、HomePageコンポーネントをasyncで修飾する必要がある
       // ->この時の対応がわからないため暫定的にawaitを使わずthen文で対応
+
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const data = octokit.repos
         .getContent({
           owner,
