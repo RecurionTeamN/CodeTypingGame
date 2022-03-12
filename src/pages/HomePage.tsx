@@ -58,7 +58,7 @@ const HomePage = () => {
   const toggleModal = (): void => setIsOpen(!isOpen);
 
   return (
-    <Container maxWidth="md" sx={{ pt: 3 }}>
+    <Container maxWidth="md" sx={{ pt: 5, pb: 5 }}>
       <div style={{ marginBottom: "20px" }}>
         <p>Confirm states</p>
         {/* TextFieldの値が空の時に再レンダーすると、refにコンポーネントオブジェクトが代入される。
@@ -144,7 +144,7 @@ const HomePage = () => {
                       setPersonalSetting({ language: personalLanguage, code: personalCodeRef.current });
                     } else {
                       // eslint-disable-next-line no-alert
-                      alert("both input must be filled.");
+                      alert("both inputs must be filled.");
                     }
                     toggleModal();
                   }}
