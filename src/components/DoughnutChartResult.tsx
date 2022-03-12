@@ -10,12 +10,12 @@ type Props = {
 // Accuracy（精度）の表示では100％を最大、Speed（早さ）の表示では現状は80wpm（平均のwpmが40程度らしい？ので）を最大とする。
 const DoughnutChartResult: React.VFC<Props> = ({ type, value }) => {
   // ドーナツチャートに表示するため、色付き部分（ゲーム結果の値）と白抜き部分の数値をfixedValuesに入れる。
-  let fixedValues = [];
+  let fixedValues: number[] = [];
   let unit = "";
   if (type === "accuracy") {
     fixedValues = [value, 100 - value];
     unit = "%";
-  } else {
+  } else if (type === "speed") {
     fixedValues = value <= 80 ? [value, 80 - value] : [80, 0];
     unit = "wpm";
   }
