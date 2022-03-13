@@ -31,6 +31,7 @@ const HomePage = () => {
   const [keyboard, setKeyboard] = useState("");
   const [language, setLanguage] = useState("");
   const [personalLanguage, setPesonalLanguage] = useState("");
+  const [githubCode, setGitHubCode] = useState("");
   const [personalSetting, setPersonalSetting] = useState({ language: "", code: "" });
 
   const [isOpen, setIsOpen] = useState(false);
@@ -58,9 +59,9 @@ const HomePage = () => {
     setPesonalLanguage(event.target.value);
   };
 
-  const handleGithubURLChange = (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>): void => {
+  const handleGithubURLChange = (baseUrl: string): void => {
     const content = () => {
-      const parameters = event.target.value.split("/");
+      const parameters = baseUrl.split("/");
       const owner = parameters[3];
       const repo = parameters[4];
       const path = parameters.slice(7, parameters.length).join("/");
@@ -68,25 +69,43 @@ const HomePage = () => {
       const octokit = new Octokit();
       // octokit.repos.getContent の呼び出しに awaitを使う場合、HomePageコンポーネントをasyncで修飾する必要がある
       // ->この時の対応がわからないため暫定的にawaitを使わずthen文で対応
-
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const data = octokit.repos
+      octokit.repos
         .getContent({
           owner,
           repo,
           path,
         })
         .then((response) => {
+          // ①JSON 生データの確認
+          console.log(response.data);
           const contentStr = JSON.stringify(response.data);
+
+          // ②JSON.stringufy後のデータの確認
+          console.log(contentStr);
+
+          // URLがrepository内の末端ファイルを指す場合にのみ
+          // jsonデータからソースコードの情報を抜き出す
           if (contentStr.indexOf('"content":"') !== -1) {
-            // URLがrepository内の末端ファイルを指す場合にのみ
-            // jsonデータからソースコードの情報を抜き出す
             const startIndex = contentStr.indexOf('content":"');
             const endIndex = contentStr.indexOf('","encoding');
             const shift = 'content":"'.length;
+            // github api から返ってくるJSONのcontentプロパティに余分な\nが入る問題↓
+            // https://superuser.com/questions/1225134/why-does-the-base64-of-a-string-contain-n
+            // RFC 2045, which defined Base64, REQUIRES a newline after 76 characters (max)
+            // base64が文字列変換されると、一定の文字数ごとに改行文字が入る仕様になっている
             const updatedContentStr = contentStr.substring(startIndex + shift, endIndex).replace(/\\n/g, "");
 
-            githubContentRef.current = Base64.decode(updatedContentStr);
+            // ③JSON.stringify後に改行文字を消去したデータの確認
+            console.log(updatedContentStr);
+
+            // ④JSON.stringify後に改行文字を消去し、utf8にデコードしたデータの確認
+            setGitHubCode(Base64.decode(updatedContentStr));
+            console.log(githubContentRef.current);
+
+            // 改行、タブの表現方法について確認するための出力
+            for (let i = 0; i < Base64.decode(updatedContentStr).length; i += 1) {
+              console.log(Base64.decode(updatedContentStr).charCodeAt(i));
+            }
           } else {
             // eslint-disable-next-line no-alert
             alert("format error");
@@ -97,6 +116,7 @@ const HomePage = () => {
           alert(response);
         });
     };
+
     content();
   };
 
@@ -118,9 +138,8 @@ const HomePage = () => {
         <br />
         {`Personal Setting: ${JSON.stringify(personalSetting)}`}
         <br />
-        {/* githubContentRef.currentをそのまま文字列として出力するとインデントが崩れるのでtextareaのプロパティとして文字列を表示 */}
         <p style={{ margin: 0 }}>github code: </p>
-        <textarea value={githubContentRef.current} />
+        <pre>{githubCode}</pre>
         <br />
       </div>
 
@@ -196,13 +215,24 @@ const HomePage = () => {
         </Modal>
 
         <TextField
+          id="githubCode"
           inputRef={githubContentRef}
           required
           label="GitHub Code URL"
           onChange={(event) => {
-            handleGithubURLChange(event);
+            githubContentRef.current = event.target.value;
           }}
         />
+        <Button
+          color="secondary"
+          variant="contained"
+          size="small"
+          onClick={() => {
+            handleGithubURLChange(githubContentRef.current);
+          }}
+        >
+          load github source code
+        </Button>
 
         <TextField
           inputRef={maxLenRef}
