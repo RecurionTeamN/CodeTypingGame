@@ -77,10 +77,12 @@ const HomePage = () => {
         })
         .then((response) => {
           // ①JSON 生データの確認
+          // eslint-disable-next-line no-console
           console.log(response.data);
           const contentStr = JSON.stringify(response.data);
 
           // ②JSON.stringufy後のデータの確認
+          // eslint-disable-next-line no-console
           console.log(contentStr);
 
           // URLがrepository内の末端ファイルを指す場合にのみ
@@ -96,14 +98,17 @@ const HomePage = () => {
             const updatedContentStr = contentStr.substring(startIndex + shift, endIndex).replace(/\\n/g, "");
 
             // ③JSON.stringify後に改行文字を消去したデータの確認
+            // eslint-disable-next-line no-console
             console.log(updatedContentStr);
 
             // ④JSON.stringify後に改行文字を消去し、utf8にデコードしたデータの確認
             setGitHubCode(Base64.decode(updatedContentStr));
+            // eslint-disable-next-line no-console
             console.log(githubContentRef.current);
 
             // 改行、タブの表現方法について確認するための出力
             for (let i = 0; i < Base64.decode(updatedContentStr).length; i += 1) {
+              // eslint-disable-next-line no-console
               console.log(Base64.decode(updatedContentStr).charCodeAt(i));
             }
           } else {
