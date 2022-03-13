@@ -1,4 +1,6 @@
 import React from "react";
+import { Box } from "@mui/material";
+import DoughnutChartResult from "./DoughnutChartResult";
 
 type Props = {
   language: string;
@@ -9,9 +11,10 @@ type Props = {
 const SimpleResult: React.VFC<Props> = ({ language, accuracy, speed }) => (
   <div>
     <h3>Result({language})</h3>
-    <p>*円グラフなどをこれから開発する</p>
-    <div>Accuracy: {accuracy}%</div>
-    <div>Speed: {speed}wpm</div>
+    <Box sx={{ display: "flex", flexDirection: "row", justifyContent: "center" }}>
+      <DoughnutChartResult type="accuracy" value={accuracy} />
+      <DoughnutChartResult type="speed" value={speed} />
+    </Box>
   </div>
 );
 
