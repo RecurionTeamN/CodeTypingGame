@@ -1,6 +1,7 @@
 import React from "react";
 import { AppBar, Typography, Box, Toolbar, Button, Theme } from "@mui/material";
 import { makeStyles } from "@mui/styles";
+import { SiTypescript } from "react-icons/si";
 import formatTime from "../utils/formatTime";
 
 type Props = {
@@ -11,7 +12,11 @@ type Props = {
 
 const useStyles = makeStyles((theme: Theme) => ({
   appbar: {
-    backgroundColor: theme.palette.primary.main,
+    backgroundColor: theme.palette.grey[800],
+  },
+  codeLanguageContainer: {
+    display: "flex",
+    alignItems: "center",
   },
 }));
 
@@ -22,22 +27,20 @@ const GameHeader: React.VFC<Props> = ({ timeTyping, missCount, reset }) => {
     <Box>
       <AppBar className={classes.appbar} position="static">
         <Toolbar sx={{ justifyContent: "space-between" }}>
-          <Box>
-            <Typography variant="h3" component="div">
-              Typing Game
+          <Typography variant="body1">
+            タイム: <strong>{formatTime(timeTyping)}</strong>
+            <br />
+            ミスタイプ: <strong>{missCount}回</strong>
+          </Typography>
+          <div className={classes.codeLanguageContainer}>
+            <SiTypescript size={30} />
+            <Typography variant="h6" sx={{ marginLeft: "10px" }}>
+              TypeScript
             </Typography>
-          </Box>
-          <Box>
-            <Typography variant="h5" component="div">
-              タイム: <strong>{formatTime(timeTyping)}</strong>
-            </Typography>
-            <Typography variant="h5" component="div">
-              ミスタイプ: <strong>{missCount} 回</strong>
-            </Typography>
-            <Button variant="contained" color="inherit" onClick={reset}>
-              reset
-            </Button>
-          </Box>
+          </div>
+          <Button variant="contained" color="inherit" sx={{ color: "black" }} onClick={reset}>
+            reset
+          </Button>
         </Toolbar>
       </AppBar>
     </Box>

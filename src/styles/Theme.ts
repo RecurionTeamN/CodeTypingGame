@@ -13,7 +13,12 @@ const theme = createTheme({
       main: "#bb0000",
     },
     background: {
-      default: "#fff",
+      default: "#e0e0e0",
+    },
+  },
+  typography: {
+    body1: {
+      fontSize: 20,
     },
   },
 });

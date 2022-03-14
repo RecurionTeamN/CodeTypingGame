@@ -1,20 +1,12 @@
 import React, { useState, useRef } from "react";
 import { StyledEngineProvider } from "@mui/material/styles";
 import { makeStyles } from "@mui/styles";
-import { Typography, Card, CardContent } from "@mui/material";
+import { Typography, Card, CardContent, Theme } from "@mui/material";
 import GameHeader from "../components/GameHeader";
 import SuccessModal from "../components/SuccessModal";
+import Header from "../components/Header";
 
-const useStyles = makeStyles(() => ({
-  statsContainer: {
-    display: "flex",
-    justifyContent: "center",
-  },
-  stats: {
-    display: "inline",
-    fontSize: "30px",
-    margin: "0 30px",
-  },
+const useStyles = makeStyles((theme: Theme) => ({
   container: {
     display: "flex",
     flexDirection: "column",
@@ -22,8 +14,7 @@ const useStyles = makeStyles(() => ({
     justifyContent: "center",
   },
   textBox: {
-    padding: "20px",
-    marginTop: "5px",
+    padding: "10px",
     whiteSpace: "pre-wrap",
     cursor: "pointer",
     "&:focus": {
@@ -31,28 +22,28 @@ const useStyles = makeStyles(() => ({
     },
   },
   greenFont: {
-    color: "#33CC33",
+    color: theme.palette.success.light,
     display: "inline",
-    fontSize: "25px",
+    fontSize: theme.typography.body1.fontSize,
   },
   redFont: {
-    backgroundColor: "#e0e0e0",
-    color: "red",
+    backgroundColor: theme.palette.background.default,
+    color: theme.palette.warning.main,
     display: "inline",
-    fontSize: "25px",
+    fontSize: theme.typography.body1.fontSize,
   },
   greyFont: {
     color: "grey",
     display: "inline",
-    fontSize: "25px",
+    fontSize: theme.typography.body1.fontSize,
   },
   blackFont: {
-    backgroundColor: "#e0e0e0",
+    backgroundColor: theme.palette.background.default,
     display: "inline",
-    fontSize: "25px",
+    fontSize: theme.typography.body1.fontSize,
   },
   card: {
-    marginTop: "20px",
+    backgroundColor: theme.palette.grey[50],
     minWidth: "70%",
   },
 }));
@@ -77,8 +68,7 @@ const GamePage = () => {
   const timer = useRef<NodeJS.Timer | null>(null);
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLDivElement>) => {
-    // eslint-disable-next-line no-console
-    console.log(e.key);
+    e.preventDefault();
 
     if (finished) return;
     if (!started) {
@@ -140,9 +130,10 @@ const GamePage = () => {
 
   return (
     <StyledEngineProvider injectFirst>
-      <GameHeader timeTyping={timeTyping} missCount={missCount} reset={reset} />
+      <Header />
       <div className={classes.container}>
         <Card className={classes.card}>
+          <GameHeader timeTyping={timeTyping} missCount={missCount} reset={reset} />
           <CardContent>
             <div onKeyPress={(e) => handleKeyPress(e)} tabIndex={-1} className={classes.textBox} aria-hidden="true">
               {/* for correct letters */}
