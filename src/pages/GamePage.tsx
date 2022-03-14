@@ -1,8 +1,9 @@
 import React, { useState, useRef } from "react";
 import { StyledEngineProvider } from "@mui/material/styles";
 import { makeStyles } from "@mui/styles";
-import { Typography } from "@mui/material";
+import { Typography, Card, CardContent } from "@mui/material";
 import GameHeader from "../components/GameHeader";
+import SuccessModal from "../components/SuccessModal";
 
 const useStyles = makeStyles(() => ({
   statsContainer: {
@@ -21,32 +22,38 @@ const useStyles = makeStyles(() => ({
     justifyContent: "center",
   },
   textBox: {
-    padding: "30px",
-    marginTop: "30px",
-    marginBottom: "30px",
-    maxWidth: "70%",
+    padding: "20px",
+    marginTop: "5px",
+    whiteSpace: "pre-wrap",
     cursor: "pointer",
+    "&:focus": {
+      outline: "none",
+    },
   },
-  blueFont: {
-    color: "#2bbeed",
+  greenFont: {
+    color: "#33CC33",
     display: "inline",
-    fontSize: "30px",
+    fontSize: "25px",
   },
   redFont: {
     backgroundColor: "#e0e0e0",
     color: "red",
     display: "inline",
-    fontSize: "30px",
+    fontSize: "25px",
   },
   greyFont: {
     color: "grey",
     display: "inline",
-    fontSize: "30px",
+    fontSize: "25px",
   },
   blackFont: {
     backgroundColor: "#e0e0e0",
     display: "inline",
-    fontSize: "30px",
+    fontSize: "25px",
+  },
+  card: {
+    marginTop: "20px",
+    minWidth: "70%",
   },
 }));
 
@@ -55,7 +62,8 @@ const GamePage = () => {
 
   // temporary typing text
   const typingText =
-    "import React, { useState, useEffect, useRef } from 'react'; const [isMissType, setIsMissType] = useState<boolean>(false);";
+    "import React, { useState, useEffect, useRef } from 'react';\nconst [isMissType, setIsMissType] = useState<boolean>(false);\nif (!started) {\n  setStarted(true);\n}\nconst timer = useRef<NodeJS.Timer | null>(null);";
+  // const typingText = "import React\n";
 
   // const [typingText, setTypingText] = useState("");
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -64,6 +72,7 @@ const GamePage = () => {
   const [finished, setFinished] = useState(false);
   const [started, setStarted] = useState(false);
   const [timeTyping, setTimeTyping] = useState(0);
+  const [successModalOpen, setSuccessModalOpen] = useState(false);
 
   const timer = useRef<NodeJS.Timer | null>(null);
 
@@ -80,12 +89,36 @@ const GamePage = () => {
       }, 10);
     }
 
-    if (e.key === typingText[currentIndex]) {
+    // 改行の処理
+    if (typingText[currentIndex] === "\n") {
+      if (e.key === "Enter") {
+        setIsMissType(false);
+
+        // while ループで改行後に続くタブを i を使ってスキップする
+        let i = 1;
+        while (currentIndex + i < typingText.length) {
+          if (typingText[currentIndex + i] === "\t" || typingText[currentIndex + i] === " ") i += 1;
+          else break;
+        }
+
+        if (currentIndex + i >= typingText.length) {
+          clearInterval(timer.current as NodeJS.Timer);
+          setFinished(true);
+          setSuccessModalOpen(true);
+        } else {
+          setCurrentIndex(currentIndex + i);
+        }
+      } else {
+        setIsMissType(true);
+        setMissCount(missCount + 1);
+      }
+    } else if (e.key === typingText[currentIndex]) {
       setIsMissType(false);
       setCurrentIndex(currentIndex + 1);
       if (currentIndex + 1 >= typingText.length) {
         clearInterval(timer.current as NodeJS.Timeout);
         setFinished(true);
+        setSuccessModalOpen(true);
       }
     } else {
       setIsMissType(true);
@@ -109,21 +142,37 @@ const GamePage = () => {
     <StyledEngineProvider injectFirst>
       <GameHeader timeTyping={timeTyping} missCount={missCount} reset={reset} />
       <div className={classes.container}>
-        <div onKeyPress={(e) => handleKeyPress(e)} tabIndex={-1} className={classes.textBox} aria-hidden="true">
-          {/* for correct letters */}
-          <Typography className={classes.blueFont}>{typingText.slice(0, currentIndex)}</Typography>
+        <Card className={classes.card}>
+          <CardContent>
+            <div onKeyPress={(e) => handleKeyPress(e)} tabIndex={-1} className={classes.textBox} aria-hidden="true">
+              {/* for correct letters */}
+              <Typography className={classes.greenFont}>{typingText.slice(0, currentIndex)}</Typography>
 
-          {/* for incorrect letters */}
-          {isMissType ? (
-            <Typography className={classes.redFont}>{typingText[currentIndex]}</Typography>
-          ) : (
-            <Typography className={classes.blackFont}>{typingText[currentIndex]}</Typography>
-          )}
+              {/* for incorrect letters */}
+              {isMissType ? (
+                <Typography className={classes.redFont}>{typingText[currentIndex]}</Typography>
+              ) : (
+                <Typography className={classes.blackFont}>{typingText[currentIndex]}</Typography>
+              )}
 
-          {/* for remaining letters */}
-          <Typography className={classes.greyFont}>{typingText.slice(currentIndex + 1, typingText.length)}</Typography>
-        </div>
+              {/* for remaining letters */}
+              <Typography className={classes.greyFont}>
+                {typingText.slice(currentIndex + 1, typingText.length)}
+              </Typography>
+            </div>
+          </CardContent>
+        </Card>
       </div>
+
+      <SuccessModal
+        result={{
+          timeTyping,
+          missCount,
+          textLength: typingText.length,
+        }}
+        successModalOpen={successModalOpen}
+        successModalClose={() => setSuccessModalOpen(false)}
+      />
     </StyledEngineProvider>
   );
 };

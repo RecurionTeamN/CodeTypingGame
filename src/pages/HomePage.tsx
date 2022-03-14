@@ -131,16 +131,19 @@ const HomePage = () => {
     <Container maxWidth="md" sx={{ pt: 5, pb: 5 }}>
       <div style={{ marginBottom: "20px" }}>
         <p>Confirm states</p>
-        {`Name: ${nameRef.current}`}
+        {/* TextFieldの値が空の時に再レンダーすると、refにコンポーネントオブジェクトが代入される。
+        三項演算子を使って、refが文字列の場合のみ出力する */}
+        {`Name: ${typeof nameRef.current === "string" ? nameRef.current : ""}`}
         <br />
         {`KeyBoard: ${keyboard}`}
         <br />
         {`Language: ${language}`}
         <br />
-        {`Code: ${codeRef.current}`}
+        {`Code: ${typeof codeRef.current === "string" ? codeRef.current : ""}`}
         <br />
-        {`MaxLength: ${maxLenRef.current}`}
+        {`Max Length: ${typeof maxLenRef.current === "string" ? maxLenRef.current : ""}`}
         <br />
+
         {`Personal Setting: ${JSON.stringify(personalSetting)}`}
         <br />
         <p style={{ margin: 0 }}>github code: </p>
@@ -208,7 +211,13 @@ const HomePage = () => {
                 />
                 <Button
                   onClick={() => {
-                    setPersonalSetting({ language: personalLanguage, code: personalCodeRef.current });
+                    // コードと言語両の方が設定された場合のみ、状態を保持する
+                    if (personalLanguage !== "" && typeof personalCodeRef.current === "string") {
+                      setPersonalSetting({ language: personalLanguage, code: personalCodeRef.current });
+                    } else {
+                      // eslint-disable-next-line no-alert
+                      alert("both inputs must be filled.");
+                    }
                     toggleModal();
                   }}
                 >

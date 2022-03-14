@@ -1,15 +1,6 @@
 import React from "react";
-import "./App.css";
-import HomePage from "./pages/HomePage";
-import GamePage from "./pages/GamePage";
-import ResultPage from "./pages/ResultPage";
+import Container from "./components/Container";
 
-const App = () => (
-  <div>
-    <HomePage />
-    <GamePage />
-    <ResultPage />
-  </div>
-);
+const App = () => <Container />;
 
 export default App;
