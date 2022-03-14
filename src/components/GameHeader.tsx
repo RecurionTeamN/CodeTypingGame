@@ -6,7 +6,7 @@ import formatTime from "../utils/formatTime";
 type Props = {
   timeTyping: number;
   missCount: number;
-  reset: VoidFunction;
+  reset: () => void;
 };
 
 const useStyles = makeStyles((theme: Theme) => ({
