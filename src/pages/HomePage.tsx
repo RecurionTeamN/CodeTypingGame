@@ -55,9 +55,16 @@ const HomePage = () => {
     const selectedCodes: CodeContents = codeData[selectedLanguage];
     const selectedCodesKeys: string[] = Object.keys(selectedCodes);
 
+    setLanguage(event.target.value);
     // 選択された言語の初期設定コード一覧が、コード選択欄の候補として表示されるように設定する
     setCodeOption(selectedCodesKeys);
-    setLanguage(event.target.value);
+
+    // コードが選択済みの場合にはリセットする
+    if (code !== "") {
+      setCode("");
+      const codeSelector = document.querySelector("#code-select");
+      if (codeSelector !== null) codeSelector.childNodes[0].nodeValue = null;
+    }
   };
   const handleCodeChange = (event: SelectChangeEvent<string>): void => {
     const codeOptions: CodeContents = codeData[language as Language];

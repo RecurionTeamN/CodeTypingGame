@@ -11,7 +11,12 @@ type Props = {
 const MySelect: React.VFC<Props> = ({ label, options, defaultVal, onchange }) => (
   <FormControl required>
     <InputLabel>{label}</InputLabel>
-    <Select label={label.toLocaleLowerCase()} defaultValue="" onChange={onchange}>
+    <Select
+      id={label.toLocaleLowerCase().replace(" ", "-")}
+      label={label.toLocaleLowerCase().replace(" ", "-")}
+      defaultValue=""
+      onChange={onchange}
+    >
       {options.map((item, index) => (
         <MenuItem key={item} value={item}>
           {item}
