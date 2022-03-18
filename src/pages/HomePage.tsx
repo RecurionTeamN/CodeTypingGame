@@ -1,5 +1,5 @@
 import { SelectChangeEvent, Button, TextField, Container, Stack, Box, Grid } from "@mui/material";
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef } from "react";
 import { Octokit } from "@octokit/rest";
 import { Base64 } from "js-base64";
 import { Link } from "react-router-dom";
