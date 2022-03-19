@@ -2,9 +2,9 @@ import React, { useState, useRef } from "react";
 import { StyledEngineProvider } from "@mui/material/styles";
 import { makeStyles } from "@mui/styles";
 import { Typography, Card, CardContent, Theme } from "@mui/material";
-import GameHeader from "../components/GameHeader";
-import SuccessModal from "../components/SuccessModal";
-import Header from "../components/Header";
+import GameHeader from "./GameHeader";
+import SuccessModal from "./SuccessModal";
+import Header from "../../components/Header";
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {

@@ -1,7 +1,7 @@
 import React from "react";
 import { Box } from "@mui/material";
 import { ThemeProvider } from "@mui/styles";
-import theme from "../styles/Theme";
+import theme from "../../styles/Theme";
 
 const ResultPageHeader = () => (
   <ThemeProvider theme={theme}>
