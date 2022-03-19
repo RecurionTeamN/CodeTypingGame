@@ -5,6 +5,7 @@ import { Typography, Card, CardContent, Theme } from "@mui/material";
 import GameHeader from "./GameHeader";
 import SuccessModal from "./SuccessModal";
 import Header from "../../components/Header";
+import KeyboardHand from "./KeyboardHand";
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
@@ -44,7 +45,8 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   card: {
     backgroundColor: theme.palette.grey[50],
-    minWidth: "70%",
+    width: "60%",
+    height: "400px",
   },
 }));
 
@@ -153,6 +155,8 @@ const GamePage = () => {
             </div>
           </CardContent>
         </Card>
+
+        <KeyboardHand />
       </div>
 
       <SuccessModal
