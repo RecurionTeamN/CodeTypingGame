@@ -2,8 +2,8 @@ import { Modal, SelectChangeEvent, Button, TextField, Container, Stack, Box } fr
 import React, { useState, useRef } from "react";
 import { Octokit } from "@octokit/rest";
 import { Base64 } from "js-base64";
-import MySelect from "../components/MySelect";
-import TypingLetters from "../components/TypingLetters";
+import MySelect from "./MySelect";
+import TypingLetters from "../../components/TypingLetters";
 
 const style = {
   position: "absolute",

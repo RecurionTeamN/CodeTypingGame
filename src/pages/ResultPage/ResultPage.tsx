@@ -1,10 +1,10 @@
 import React from "react";
 import Box from "@mui/material/Box";
-import ResultPageHeader from "../components/ResultPageHeader";
-import SimpleResult from "../components/SimpleResult";
-import BestScores from "../components/BestScores";
-import KeyStatistics from "../components/KeyStatistics";
-import FingerStatistcs from "../components/FingerStatistics";
+import ResultPageHeader from "./ResultPageHeader";
+import SimpleResult from "./SimpleResult";
+import BestScores from "../../components/BestScores";
+import KeyStatistics from "./KeyStatistics";
+import FingerStatistcs from "./FingerStatistics";
 
 // 子コンポーネントで使用する予定のデータ（現状はダミー）とその型
 type Result = {

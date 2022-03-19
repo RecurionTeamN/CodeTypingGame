@@ -1,6 +1,6 @@
 import React from "react";
 import { Box } from "@mui/material";
-import DoughnutChartResult from "./DoughnutChartResult";
+import DoughnutChartResult from "../../components/DoughnutChartResult";
 
 type Props = {
   language: string;
