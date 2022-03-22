@@ -3,17 +3,21 @@ import React from "react";
 
 type Props = {
   label: string;
-  value: string;
   options: string[];
   onchange: (event: SelectChangeEvent<string>) => void;
 };
 
-const MySelect: React.VFC<Props> = ({ label, value, options, onchange }) => (
+const MySelect: React.VFC<Props> = ({ label, options, onchange }) => (
   <FormControl required>
     <InputLabel>{label}</InputLabel>
-    <Select label={label.toLocaleLowerCase()} value={value} onChange={onchange}>
-      {options.map((item, index) => (
-        <MenuItem key={item} value={index}>
+    <Select
+      id={label.toLocaleLowerCase().replace(" ", "-")}
+      label={label.toLocaleLowerCase().replace(" ", "-")}
+      defaultValue=""
+      onChange={onchange}
+    >
+      {options.map((item) => (
+        <MenuItem key={item} value={item}>
           {item}
         </MenuItem>
       ))}
