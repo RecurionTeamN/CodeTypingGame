@@ -7,6 +7,7 @@ import PersonalCodeImport from "./PersonalCodeImport";
 
 type Props = {
   isModalOpen: boolean;
+  isShowingPersonalSetting: boolean;
   languages: string[];
   toggleModal: () => void;
   toggleSetting: () => void;
@@ -34,6 +35,7 @@ const style = {
 
 const HomeModal: React.VFC<Props> = ({
   isModalOpen,
+  isShowingPersonalSetting,
   languages,
   toggleModal,
   toggleSetting,
@@ -165,7 +167,7 @@ const HomeModal: React.VFC<Props> = ({
                 }
                 setPersonalSetting({ language: personalLanguage, code });
                 resetDefaultSetting();
-                toggleSetting();
+                if (!isShowingPersonalSetting) toggleSetting();
                 toggleModal();
               }}
             >

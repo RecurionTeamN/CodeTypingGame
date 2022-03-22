@@ -140,6 +140,7 @@ const HomePage = () => {
 
         <HomeModal
           isModalOpen={isModalOpen}
+          isShowingPersonalSetting={isShowingPersonalSetting}
           languages={languages}
           toggleModal={toggleModal}
           toggleSetting={toggleSetting}
