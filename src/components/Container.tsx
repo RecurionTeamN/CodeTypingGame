@@ -2,9 +2,9 @@ import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "@mui/styles";
 import theme from "../styles/Theme";
-import GamePage from "../pages/GamePage";
-import HomePage from "../pages/HomePage";
-import ResultPage from "../pages/ResultPage";
+import GamePage from "../pages/GamePage/GamePage";
+import HomePage from "../pages/HomePage/HomePage";
+import ResultPage from "../pages/ResultPage/ResultPage";
 
 const Container = () => (
   <ThemeProvider theme={theme}>

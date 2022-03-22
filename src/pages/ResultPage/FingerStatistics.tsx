@@ -1,6 +1,6 @@
 import React from "react";
 import Box from "@mui/material/Box";
-import HandSVG from "./HandSVG";
+import HandSVG from "../../components/HandSVG";
 
 type Hand = "left" | "right";
 

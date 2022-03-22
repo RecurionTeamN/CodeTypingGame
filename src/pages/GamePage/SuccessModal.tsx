@@ -2,7 +2,7 @@ import React from "react";
 import { makeStyles } from "@mui/styles";
 import { Modal, Backdrop, Slide, Box, Typography } from "@mui/material";
 
-import formatTime from "../utils/formatTime";
+import formatTime from "../../utils/formatTime";
 
 type Result = {
   timeTyping: number;
