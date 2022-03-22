@@ -9,6 +9,7 @@ type Props = {
   isModalOpen: boolean;
   languages: string[];
   toggleModal: () => void;
+  toggleSetting: () => void;
   resetDefaultSetting: () => void;
   setPersonalSetting: (
     value: React.SetStateAction<{
@@ -35,6 +36,7 @@ const HomeModal: React.VFC<Props> = ({
   isModalOpen,
   languages,
   toggleModal,
+  toggleSetting,
   resetDefaultSetting,
   setPersonalSetting,
 }) => {
@@ -163,6 +165,7 @@ const HomeModal: React.VFC<Props> = ({
                 }
                 setPersonalSetting({ language: personalLanguage, code });
                 resetDefaultSetting();
+                toggleSetting();
                 toggleModal();
               }}
             >

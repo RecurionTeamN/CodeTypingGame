@@ -74,10 +74,10 @@ const HomePage = () => {
   };
 
   const startGame = (): void => {
-    if (personalSetting.language === "" && language !== "" && code !== "") {
-      // 一度も personal setting が行われていない場合
+    if (personalSetting.language === "" && language !== "" && code !== "" && keyboard !== "") {
+      // 必須項目が設定されている、かつ、一度も personal setting が行われていない場合
       navigate("/game", { state: { language, code, keyboard } });
-    } else if (isShowingPersonalSetting) {
+    } else if (isShowingPersonalSetting && keyboard !== "" && language === "" && code === "") {
       // personal setting を使用する場合
       navigate("/game", { state: { language: personalSetting.language, code: personalSetting.code, keyboard } });
     } else if (personalSetting.language !== "" && !isShowingPersonalSetting && language !== "" && code !== "") {
@@ -142,6 +142,7 @@ const HomePage = () => {
           isModalOpen={isModalOpen}
           languages={languages}
           toggleModal={toggleModal}
+          toggleSetting={toggleSetting}
           resetDefaultSetting={resetDefaultSetting}
           setPersonalSetting={setPersonalSetting}
         />
