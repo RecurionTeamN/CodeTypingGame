@@ -104,8 +104,8 @@ const HomePage = () => {
         <TextField inputRef={nameRef} label="Name" onChange={handleNameChange} />
         <MySelect label="Keyboard Type" options={keyboards} onchange={handleKeyboardChange} />
 
-        {/* default setting を使う場合には言語とコードの選択欄を表示する */}
-        {!isShowingPersonalSetting && (
+        {/* 画面遷移直後 または default setting を使う場合には言語とコードの選択欄を表示する */}
+        {!isShowingPersonalSetting && personalSetting.language === "" && (
           <>
             <MySelect label="Language" options={languages} onchange={handleLanguageChange} />
             <MySelect label="Code Select" options={codeOption} onchange={handleCodeChange} />
@@ -146,7 +146,7 @@ const HomePage = () => {
           setPersonalSetting={setPersonalSetting}
         />
 
-        {/* 画面遷移直後の状態ではスタートボタンのみ表示する */}
+        {/* 画面遷移直後の状態または default setting の場合、スタートボタンのみ表示する */}
         {personalSetting.language === "" && !isShowingPersonalSetting && (
           <Button color="primary" variant="contained" style={{ width: "100%" }} onClick={startGame}>
             Start Game!
@@ -157,13 +157,13 @@ const HomePage = () => {
         default setting を使うモードに切り替えるためのボタンを表示する */}
         {personalSetting.language !== "" && !isShowingPersonalSetting && (
           <Grid container direction="row" justifyContent="center" alignItems="center">
-            <Grid item xs={5} marginRight={10}>
-              <Button color="primary" variant="contained" style={{ width: "100%" }} onClick={startGame}>
+            <Grid item xs={6} paddingX={2}>
+              <Button color="primary" variant="contained" style={{ width: "100%", height: "45px" }} onClick={startGame}>
                 Start Game!
               </Button>
             </Grid>
-            <Grid item xs={5}>
-              <Button color="info" variant="outlined" style={{ width: "100%" }} onClick={toggleSetting}>
+            <Grid item xs={6} paddingX={2}>
+              <Button color="info" variant="outlined" style={{ width: "100%", height: "45px" }} onClick={toggleSetting}>
                 Use default setting
               </Button>
             </Grid>
@@ -174,14 +174,19 @@ const HomePage = () => {
          personal setting 設定に再度切替えるためのボタンを表示する */}
         {personalSetting.language !== "" && isShowingPersonalSetting && (
           <Grid container direction="row" justifyContent="center" alignItems="center">
-            <Grid item xs={5} marginRight={10}>
-              <Button color="primary" variant="contained" style={{ width: "100%" }} onClick={startGame}>
+            <Grid item xs={6} paddingX={2}>
+              <Button color="primary" variant="contained" style={{ width: "100%", height: "45px" }} onClick={startGame}>
                 Start Game!
               </Button>
             </Grid>
 
-            <Grid item xs={5}>
-              <Button color="primary" variant="outlined" style={{ width: "100%" }} onClick={toggleSetting}>
+            <Grid item xs={6} paddingX={2}>
+              <Button
+                color="primary"
+                variant="outlined"
+                style={{ width: "100%", height: "45px" }}
+                onClick={toggleSetting}
+              >
                 Use personal setting
               </Button>
             </Grid>
