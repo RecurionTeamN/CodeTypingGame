@@ -175,13 +175,13 @@ export const keyboardData: KeyBoardData = {
       hand: "right",
       finger: "fourth",
     },
-    "back space": {
+    Backspace: {
       keyType: "default",
       position: [0, 14],
       hand: "right",
       finger: "fourth",
     },
-    tab: {
+    Tab: {
       keyType: "default",
       position: [1, 0],
       hand: "left",
@@ -331,7 +331,7 @@ export const keyboardData: KeyBoardData = {
       hand: "right",
       finger: "fourth",
     },
-    enter: {
+    Enter: {
       keyType: "default",
       position: [1, 13],
       hand: "right",
@@ -487,7 +487,7 @@ export const keyboardData: KeyBoardData = {
       hand: "right",
       finger: "fourth",
     },
-    "l-shift": {
+    "l-Shift": {
       keyType: "default",
       position: [3, 0],
       hand: "left",
@@ -625,13 +625,13 @@ export const keyboardData: KeyBoardData = {
       hand: "right",
       finger: "fourth",
     },
-    "r-shift": {
+    "r-Shift": {
       keyType: "default",
       position: [3, 12],
       hand: "right",
       finger: "fourth",
     },
-    "l-control": {
+    "l-Control": {
       keyType: "default",
       position: [4, 0],
       hand: "left",
@@ -643,7 +643,7 @@ export const keyboardData: KeyBoardData = {
       hand: "left",
       finger: "fourth",
     },
-    "l-alt": {
+    "l-Alt": {
       keyType: "default",
       position: [4, 2],
       hand: "left",
@@ -673,7 +673,7 @@ export const keyboardData: KeyBoardData = {
       hand: "right",
       finger: "second",
     },
-    "r-alt": {
+    "r-Alt": {
       keyType: "default",
       position: [4, 7],
       hand: "right",
@@ -691,7 +691,7 @@ export const keyboardData: KeyBoardData = {
       hand: "right",
       finger: "fourth",
     },
-    "r-control": {
+    "r-Control": {
       keyType: "default",
       position: [4, 10],
       hand: "right",
@@ -855,13 +855,13 @@ export const keyboardData: KeyBoardData = {
       hand: "right",
       finger: "fourth",
     },
-    "back space": {
+    Backspace: {
       keyType: "default",
       position: [0, 13],
       hand: "right",
       finger: "fourth",
     },
-    tab: {
+    Tab: {
       keyType: "default",
       position: [1, 0],
       hand: "left",
@@ -1161,13 +1161,13 @@ export const keyboardData: KeyBoardData = {
       hand: "right",
       finger: "fourth",
     },
-    enter: {
+    Enter: {
       keyType: "default",
       position: [2, 12],
       hand: "right",
       finger: "fourth",
     },
-    "l-shift": {
+    "l-Shift": {
       keyType: "default",
       position: [3, 0],
       hand: "left",
@@ -1293,13 +1293,13 @@ export const keyboardData: KeyBoardData = {
       hand: "right",
       finger: "fourth",
     },
-    "r-shift": {
+    "r-Shift": {
       keyType: "default",
       position: [3, 11],
       hand: "right",
       finger: "fourth",
     },
-    "l-control": {
+    "l-Control": {
       keyType: "default",
       position: [4, 0],
       hand: "left",
@@ -1311,7 +1311,7 @@ export const keyboardData: KeyBoardData = {
       hand: "left",
       finger: "fourth",
     },
-    "l-alt": {
+    "l-Alt": {
       keyType: "default",
       position: [4, 2],
       hand: "left",
@@ -1323,7 +1323,7 @@ export const keyboardData: KeyBoardData = {
       hand: "left",
       finger: "thumb",
     },
-    "r-alt": {
+    "r-Alt": {
       keyType: "default",
       position: [4, 4],
       hand: "right",
@@ -1341,7 +1341,7 @@ export const keyboardData: KeyBoardData = {
       hand: "right",
       finger: "fourth",
     },
-    "r-control": {
+    "r-Control": {
       keyType: "default",
       position: [4, 7],
       hand: "right",
@@ -1505,13 +1505,13 @@ export const keyboardData: KeyBoardData = {
       hand: "right",
       finger: "fourth",
     },
-    "back space": {
+    Backspace: {
       keyType: "default",
       position: [0, 13],
       hand: "right",
       finger: "fourth",
     },
-    tab: {
+    Tab: {
       keyType: "default",
       position: [1, 0],
       hand: "left",
@@ -1661,13 +1661,13 @@ export const keyboardData: KeyBoardData = {
       hand: "right",
       finger: "fourth",
     },
-    enter: {
+    Enter: {
       keyType: "default",
       position: [1, 13],
       hand: "right",
       finger: "fourth",
     },
-    control: {
+    Control: {
       keyType: "default",
       position: [2, 0],
       hand: "left",
@@ -1817,7 +1817,7 @@ export const keyboardData: KeyBoardData = {
       hand: "right",
       finger: "fourth",
     },
-    "l-shift": {
+    "l-Shift": {
       keyType: "default",
       position: [3, 0],
       hand: "left",
@@ -1949,7 +1949,7 @@ export const keyboardData: KeyBoardData = {
       hand: "right",
       finger: "fourth",
     },
-    "r-shift": {
+    "r-Shift": {
       keyType: "default",
       position: [3, 12],
       hand: "right",
@@ -1967,7 +1967,7 @@ export const keyboardData: KeyBoardData = {
       hand: "left",
       finger: "fourth",
     },
-    "l-command": {
+    "l-Meta": {
       keyType: "default",
       position: [4, 2],
       hand: "left",
@@ -1991,7 +1991,7 @@ export const keyboardData: KeyBoardData = {
       hand: "right",
       finger: "first",
     },
-    "r-command": {
+    "r-Meta": {
       keyType: "default",
       position: [4, 6],
       hand: "right",
@@ -2161,13 +2161,13 @@ export const keyboardData: KeyBoardData = {
       hand: "right",
       finger: "fourth",
     },
-    "back space": {
+    Backspace: {
       keyType: "default",
       position: [0, 13],
       hand: "right",
       finger: "fourth",
     },
-    tab: {
+    Tab: {
       keyType: "default",
       position: [1, 0],
       hand: "left",
@@ -2467,13 +2467,13 @@ export const keyboardData: KeyBoardData = {
       hand: "right",
       finger: "fourth",
     },
-    enter: {
+    Enter: {
       keyType: "default",
       position: [2, 12],
       hand: "right",
       finger: "fourth",
     },
-    "l-shift": {
+    "l-Shift": {
       keyType: "default",
       position: [3, 0],
       hand: "left",
@@ -2599,13 +2599,13 @@ export const keyboardData: KeyBoardData = {
       hand: "right",
       finger: "fourth",
     },
-    "r-shift": {
+    "r-Shift": {
       keyType: "default",
       position: [3, 11],
       hand: "right",
       finger: "fourth",
     },
-    control: {
+    Control: {
       keyType: "default",
       position: [4, 0],
       hand: "left",
@@ -2617,7 +2617,7 @@ export const keyboardData: KeyBoardData = {
       hand: "left",
       finger: "fourth",
     },
-    "l-command": {
+    "l-Meta": {
       keyType: "default",
       position: [4, 2],
       hand: "left",
@@ -2629,7 +2629,7 @@ export const keyboardData: KeyBoardData = {
       hand: "left",
       finger: "thumb",
     },
-    "r-command": {
+    "r-Meta": {
       keyType: "default",
       position: [4, 4],
       hand: "right",
