@@ -1,10 +1,10 @@
 import { SelectChangeEvent, Button, TextField, Stack, Box, Grid } from "@mui/material";
 import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import MySelect from "../components/MySelect";
-import HomeModal from "../components/HomeModal";
-import TypingLetters from "../components/TypingLetters";
-import codeData from "../components/CodeContentData";
+import MySelect from "./MySelect";
+import HomeModal from "./HomeModal";
+import TypingLetters from "./TypingLetters";
+import codeData from "./CodeContentData";
 
 type LangType = typeof codeData;
 type Language = keyof LangType;

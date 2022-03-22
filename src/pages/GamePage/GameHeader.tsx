@@ -2,7 +2,7 @@ import React from "react";
 import { AppBar, Typography, Box, Toolbar, Button, Theme } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { SiTypescript } from "react-icons/si";
-import formatTime from "../utils/formatTime";
+import formatTime from "../../utils/formatTime";
 
 type Props = {
   timeTyping: number;
