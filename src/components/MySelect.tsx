@@ -4,11 +4,10 @@ import React from "react";
 type Props = {
   label: string;
   options: string[];
-  defaultVal: string;
   onchange: (event: SelectChangeEvent<string>) => void;
 };
 
-const MySelect: React.VFC<Props> = ({ label, options, defaultVal, onchange }) => (
+const MySelect: React.VFC<Props> = ({ label, options, onchange }) => (
   <FormControl required>
     <InputLabel>{label}</InputLabel>
     <Select
@@ -17,7 +16,7 @@ const MySelect: React.VFC<Props> = ({ label, options, defaultVal, onchange }) =>
       defaultValue=""
       onChange={onchange}
     >
-      {options.map((item, index) => (
+      {options.map((item) => (
         <MenuItem key={item} value={item}>
           {item}
         </MenuItem>

@@ -9,18 +9,13 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const TypingLetters: React.VFC<{ initLetters: string }> = ({ initLetters }) => {
+const TypingLetters: React.VFC<{ initLetters: string; secondLetters: string }> = ({ initLetters, secondLetters }) => {
   const classes = useStyles();
   return (
     <div className={classes.typingAnimation}>
       <Typerwriter
         onInit={(typewriter) => {
-          typewriter
-            .typeString(initLetters)
-            .pauseFor(Infinity)
-            .deleteAll()
-            .typeString("Change before you have to.")
-            .start();
+          typewriter.typeString(initLetters).pauseFor(Infinity).deleteAll().typeString(secondLetters).start();
         }}
       />
     </div>
