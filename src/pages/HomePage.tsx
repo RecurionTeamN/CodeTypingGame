@@ -1,175 +1,131 @@
-import { Modal, SelectChangeEvent, Button, TextField, Container, Stack, Box } from "@mui/material";
+import { SelectChangeEvent, Button, TextField, Stack, Box, Grid } from "@mui/material";
 import React, { useState, useRef } from "react";
-import { Octokit } from "@octokit/rest";
-import { Base64 } from "js-base64";
+import { useNavigate } from "react-router-dom";
 import MySelect from "../components/MySelect";
+import HomeModal from "../components/HomeModal";
 import TypingLetters from "../components/TypingLetters";
+import codeData from "../components/CodeContentData";
 
-const style = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: "50%",
-  height: "50%",
-  bgcolor: "background.paper",
-  border: "2px solid #000",
-  boxShadow: 24,
-  p: 4,
-};
+type LangType = typeof codeData;
+type Language = keyof LangType;
+type CodeContents = typeof codeData[Language];
+type CodeTitles = keyof CodeContents;
 
 const keyboards = ["Japan", "US"];
-const languages = ["Java", "JavaScript", "Python"];
+const languages: string[] = Object.keys(codeData);
 
 const HomePage = () => {
-  const nameRef = useRef("");
-  const codeRef = useRef("");
-  const maxLenRef = useRef("");
-  const personalCodeRef = useRef("");
-  const githubContentRef = useRef("");
+  const navigate = useNavigate();
 
+  const nameRef = useRef("");
   const [keyboard, setKeyboard] = useState("");
   const [language, setLanguage] = useState("");
-  const [personalLanguage, setPesonalLanguage] = useState("");
-  const [githubCode, setGitHubCode] = useState("");
+  const [codeOption, setCodeOption] = useState<string[]>([]);
+  const [code, setCode] = useState<string>("");
   const [personalSetting, setPersonalSetting] = useState({ language: "", code: "" });
 
-  const [isOpen, setIsOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isShowingPersonalSetting, setIsShowingPersonalSetting] = useState(false);
 
   const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     nameRef.current = event.target.value;
-  };
-  const handleCodeChange = (event: React.ChangeEvent<HTMLTextAreaElement>): void => {
-    codeRef.current = event.target.value;
-  };
-  const handleMaxLenChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
-    maxLenRef.current = event.target.value;
-  };
-  const handlePersonalCodeChange = (event: React.ChangeEvent<HTMLTextAreaElement>): void => {
-    personalCodeRef.current = event.target.value;
   };
 
   const handleKeyboardChange = (event: SelectChangeEvent<string>): void => {
     setKeyboard(event.target.value);
   };
+
   const handleLanguageChange = (event: SelectChangeEvent<string>): void => {
+    const selectedLanguage: Language = event.target.value as Language;
+
+    // 選択された言語のデフォルトコード一覧
+    const selectedCodes: CodeContents = codeData[selectedLanguage];
+    const selectedCodesKeys: string[] = Object.keys(selectedCodes);
+
     setLanguage(event.target.value);
-  };
-  const handlePersonalLanguageChange = (event: SelectChangeEvent<string>): void => {
-    setPesonalLanguage(event.target.value);
-  };
+    // 選択された言語の初期設定コード一覧が、コード選択欄の候補として表示されるように設定する
+    setCodeOption(selectedCodesKeys);
 
-  const handleGithubURLChange = (baseUrl: string): void => {
-    const content = () => {
-      const parameters = baseUrl.split("/");
-      const owner = parameters[3];
-      const repo = parameters[4];
-      const path = parameters.slice(7, parameters.length).join("/");
-
-      const octokit = new Octokit();
-      // octokit.repos.getContent の呼び出しに awaitを使う場合、HomePageコンポーネントをasyncで修飾する必要がある
-      // ->この時の対応がわからないため暫定的にawaitを使わずthen文で対応
-      octokit.repos
-        .getContent({
-          owner,
-          repo,
-          path,
-        })
-        .then((response) => {
-          // ①JSON 生データの確認
-          // eslint-disable-next-line no-console
-          console.log(response.data);
-          const contentStr = JSON.stringify(response.data);
-
-          // ②JSON.stringufy後のデータの確認
-          // eslint-disable-next-line no-console
-          console.log(contentStr);
-
-          // URLがrepository内の末端ファイルを指す場合にのみ
-          // jsonデータからソースコードの情報を抜き出す
-          if (contentStr.indexOf('"content":"') !== -1) {
-            const startIndex = contentStr.indexOf('content":"');
-            const endIndex = contentStr.indexOf('","encoding');
-            const shift = 'content":"'.length;
-            // github api から返ってくるJSONのcontentプロパティに余分な\nが入る問題↓
-            // https://superuser.com/questions/1225134/why-does-the-base64-of-a-string-contain-n
-            // RFC 2045, which defined Base64, REQUIRES a newline after 76 characters (max)
-            // base64が文字列変換されると、一定の文字数ごとに改行文字が入る仕様になっている
-            const updatedContentStr = contentStr.substring(startIndex + shift, endIndex).replace(/\\n/g, "");
-
-            // ③JSON.stringify後に改行文字を消去したデータの確認
-            // eslint-disable-next-line no-console
-            console.log(updatedContentStr);
-
-            // ④JSON.stringify後に改行文字を消去し、utf8にデコードしたデータの確認
-            setGitHubCode(Base64.decode(updatedContentStr));
-            // eslint-disable-next-line no-console
-            console.log(githubContentRef.current);
-
-            // 改行、タブの表現方法について確認するための出力
-            for (let i = 0; i < Base64.decode(updatedContentStr).length; i += 1) {
-              // eslint-disable-next-line no-console
-              console.log(Base64.decode(updatedContentStr).charCodeAt(i));
-            }
-          } else {
-            // eslint-disable-next-line no-alert
-            alert("format error");
-          }
-        })
-        .catch((response) => {
-          // eslint-disable-next-line no-alert
-          alert(response);
-        });
-    };
-
-    content();
+    // コードが選択済みの場合にはリセットする
+    if (code !== "") {
+      setCode("");
+      const codeSelector = document.querySelector("#code-select");
+      if (codeSelector !== null) {
+        codeSelector.childNodes[0].nodeValue = null;
+      }
+    }
   };
 
-  const toggleModal = (): void => setIsOpen(!isOpen);
+  const handleCodeChange = (event: SelectChangeEvent<string>): void => {
+    const codeOptions: CodeContents = codeData[language as Language];
+    const selectedCodeTitle: CodeTitles = event.target.value as CodeTitles;
+    setCode(codeOptions[selectedCodeTitle]);
+  };
+
+  const toggleModal = (): void => setIsModalOpen(!isModalOpen);
+
+  const resetDefaultSetting = (): void => {
+    setLanguage("");
+    setCode("");
+  };
+
+  const toggleSetting = (): void => {
+    setIsShowingPersonalSetting(!isShowingPersonalSetting);
+  };
+
+  const startGame = (): void => {
+    if (personalSetting.language === "" && language !== "" && code !== "") {
+      // 一度も personal setting が行われていない場合
+      navigate("/game", { state: { language, code, keyboard } });
+    } else if (isShowingPersonalSetting) {
+      // personal setting を使用する場合
+      navigate("/game", { state: { language: personalSetting.language, code: personalSetting.code, keyboard } });
+    } else if (personalSetting.language !== "" && !isShowingPersonalSetting && language !== "" && code !== "") {
+      // personal setting が設定された後に default setting に切り替えた場合
+      navigate("/game", { state: { language: personalSetting.language, code: personalSetting.code, keyboard } });
+    } else {
+      // 必須項目が設定されていない場合
+      // eslint-disable-next-line no-alert
+      alert("Select keyboard type, language, and code.");
+    }
+  };
 
   return (
-    <Container maxWidth="md" sx={{ pt: 5, pb: 5 }}>
-      <div style={{ marginBottom: "20px" }}>
-        <p>Confirm states</p>
-        {/* TextFieldの値が空の時に再レンダーすると、refにコンポーネントオブジェクトが代入される。
-        三項演算子を使って、refが文字列の場合のみ出力する */}
-        {`Name: ${typeof nameRef.current === "string" ? nameRef.current : ""}`}
-        <br />
-        {`KeyBoard: ${keyboard}`}
-        <br />
-        {`Language: ${language}`}
-        <br />
-        {`Code: ${typeof codeRef.current === "string" ? codeRef.current : ""}`}
-        <br />
-        {`Max Length: ${typeof maxLenRef.current === "string" ? maxLenRef.current : ""}`}
-        <br />
+    <Grid
+      container
+      spacing={0}
+      direction="column"
+      alignItems="center"
+      justifyContent="center"
+      style={{ minHeight: "100vh" }}
+    >
+      <TypingLetters initLetters="Recursion Typing Game!" secondLetters="Hurry up !!!! Hurry up!!!!!!" />
+      <Stack spacing={3} paddingTop={5}>
+        <TextField inputRef={nameRef} label="Name" onChange={handleNameChange} />
+        <MySelect label="Keyboard Type" options={keyboards} onchange={handleKeyboardChange} />
 
-        {`Personal Setting: ${JSON.stringify(personalSetting)}`}
-        <br />
-        <p style={{ margin: 0 }}>github code: </p>
-        <pre>{githubCode}</pre>
-        <br />
-      </div>
+        {/* default setting を使う場合には言語とコードの選択欄を表示する */}
+        {!isShowingPersonalSetting && (
+          <>
+            <MySelect label="Language" options={languages} onchange={handleLanguageChange} />
+            <MySelect label="Code Select" options={codeOption} onchange={handleCodeChange} />
+          </>
+        )}
 
-      <TypingLetters initLetters="Recursion Typing Game!" />
-      <Stack spacing={3}>
-        <TextField inputRef={nameRef} required label="Name" onChange={handleNameChange} />
-
-        <MySelect label="Keyboard Type" value={keyboard} options={keyboards} onchange={handleKeyboardChange} />
-
-        <MySelect label="Language" value={language} options={languages} onchange={handleLanguageChange} />
-
-        <TextField
-          inputRef={codeRef}
-          required
-          label="Paste code here"
-          fullWidth
-          margin="normal"
-          rows={7}
-          multiline
-          variant="outlined"
-          onChange={handleCodeChange}
-        />
+        {/* personal setting が設定されている場合には default setting 用のフォームを表示する */}
+        {personalSetting.language !== "" && (
+          <>
+            <TextField disabled label="Language" value={personalSetting.language} />
+            <TextField
+              disabled
+              rows={7}
+              multiline
+              label="Personal Code"
+              value={personalSetting.code}
+              style={{ opacity: 1 }}
+            />
+          </>
+        )}
 
         <Box textAlign="center">
           <Button
@@ -182,86 +138,57 @@ const HomePage = () => {
           </Button>
         </Box>
 
-        <Modal
-          open={isOpen}
-          onClose={toggleModal}
-          aria-labelledby="personal-setting-modal"
-          aria-describedby="set-personal-condition"
-        >
-          <div>
-            <Box sx={style} alignItems="center" justifyContent="center">
-              <p>Personal Setting</p>
-              <Stack spacing={3} paddingTop={1}>
-                <MySelect
-                  label="Language"
-                  value={personalLanguage}
-                  options={languages}
-                  onchange={handlePersonalLanguageChange}
-                />
-                <TextField
-                  inputRef={personalCodeRef}
-                  required
-                  label="Paste code here"
-                  fullWidth
-                  margin="normal"
-                  rows={7}
-                  multiline
-                  variant="outlined"
-                  onChange={handlePersonalCodeChange}
-                />
-                <Button
-                  onClick={() => {
-                    // コードと言語両の方が設定された場合のみ、状態を保持する
-                    if (personalLanguage !== "" && typeof personalCodeRef.current === "string") {
-                      setPersonalSetting({ language: personalLanguage, code: personalCodeRef.current });
-                    } else {
-                      // eslint-disable-next-line no-alert
-                      alert("both inputs must be filled.");
-                    }
-                    toggleModal();
-                  }}
-                >
-                  Confirm
-                </Button>
-              </Stack>
-            </Box>
-          </div>
-        </Modal>
-
-        <TextField
-          id="githubCode"
-          inputRef={githubContentRef}
-          required
-          label="GitHub Code URL"
-          onChange={(event) => {
-            githubContentRef.current = event.target.value;
-          }}
-        />
-        <Button
-          color="secondary"
-          variant="contained"
-          size="small"
-          onClick={() => {
-            handleGithubURLChange(githubContentRef.current);
-          }}
-        >
-          load github source code
-        </Button>
-
-        <TextField
-          inputRef={maxLenRef}
-          required
-          type="number"
-          label="Max number of letters"
-          InputProps={{ inputProps: { min: 0 } }}
-          onChange={handleMaxLenChange}
+        <HomeModal
+          isModalOpen={isModalOpen}
+          languages={languages}
+          toggleModal={toggleModal}
+          resetDefaultSetting={resetDefaultSetting}
+          setPersonalSetting={setPersonalSetting}
         />
 
-        <Button color="primary" variant="contained" size="large">
-          Let&apos;s start Game!
-        </Button>
+        {/* 画面遷移直後の状態ではスタートボタンのみ表示する */}
+        {personalSetting.language === "" && !isShowingPersonalSetting && (
+          <Button color="primary" variant="contained" style={{ width: "100%" }} onClick={startGame}>
+            Start Game!
+          </Button>
+        )}
+
+        {/* personal setting が適用されている場合、
+        default setting を使うモードに切り替えるためのボタンを表示する */}
+        {personalSetting.language !== "" && !isShowingPersonalSetting && (
+          <Grid container direction="row" justifyContent="center" alignItems="center">
+            <Grid item xs={5} marginRight={10}>
+              <Button color="primary" variant="contained" style={{ width: "100%" }} onClick={startGame}>
+                Start Game!
+              </Button>
+            </Grid>
+            <Grid item xs={5}>
+              <Button color="info" variant="outlined" style={{ width: "100%" }} onClick={toggleSetting}>
+                Use default setting
+              </Button>
+            </Grid>
+          </Grid>
+        )}
+
+        {/* personal setting の情報が設定されたあとに default setting モードに切り替えられている場合、
+         personal setting 設定に再度切替えるためのボタンを表示する */}
+        {personalSetting.language !== "" && isShowingPersonalSetting && (
+          <Grid container direction="row" justifyContent="center" alignItems="center">
+            <Grid item xs={5} marginRight={10}>
+              <Button color="primary" variant="contained" style={{ width: "100%" }} onClick={startGame}>
+                Start Game!
+              </Button>
+            </Grid>
+
+            <Grid item xs={5}>
+              <Button color="primary" variant="outlined" style={{ width: "100%" }} onClick={toggleSetting}>
+                Use personal setting
+              </Button>
+            </Grid>
+          </Grid>
+        )}
       </Stack>
-    </Container>
+    </Grid>
   );
 };
 
