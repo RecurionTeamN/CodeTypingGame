@@ -4,15 +4,15 @@ import { useNavigate } from "react-router-dom";
 import MySelect from "./MySelect";
 import HomeModal from "./HomeModal";
 import TypingLetters from "./TypingLetters";
-import codeData from "./CodeContentData";
+import defaultContent from "../../data/DefaultCodeContent";
 
-type LangType = typeof codeData;
+type LangType = typeof defaultContent;
 type Language = keyof LangType;
-type CodeContents = typeof codeData[Language];
+type CodeContents = typeof defaultContent[Language];
 type CodeTitles = keyof CodeContents;
 
 const keyboards = ["Japan", "US"];
-const languages: string[] = Object.keys(codeData);
+const languages: string[] = Object.keys(defaultContent);
 
 const HomePage = () => {
   const navigate = useNavigate();
@@ -39,7 +39,7 @@ const HomePage = () => {
     const selectedLanguage: Language = event.target.value as Language;
 
     // 選択された言語のデフォルトコード一覧
-    const selectedCodes: CodeContents = codeData[selectedLanguage];
+    const selectedCodes: CodeContents = defaultContent[selectedLanguage];
     const selectedCodesKeys: string[] = Object.keys(selectedCodes);
 
     setLanguage(event.target.value);
@@ -57,7 +57,7 @@ const HomePage = () => {
   };
 
   const handleCodeChange = (event: SelectChangeEvent<string>): void => {
-    const codeOptions: CodeContents = codeData[language as Language];
+    const codeOptions: CodeContents = defaultContent[language as Language];
     const selectedCodeTitle: CodeTitles = event.target.value as CodeTitles;
     setCode(codeOptions[selectedCodeTitle]);
   };

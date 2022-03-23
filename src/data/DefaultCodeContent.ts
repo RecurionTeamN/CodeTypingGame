@@ -1,4 +1,4 @@
-const codeData = {
+const defaultContent = {
   Java: {
     title1: "Java content 1",
     title2: "Java content 2",
@@ -16,4 +16,4 @@ const codeData = {
   },
 };
 
-export default codeData;
+export default defaultContent;
