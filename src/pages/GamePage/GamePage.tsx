@@ -154,7 +154,7 @@ const GamePage: React.FC<Props> = ({ codeContent, language, gameData, pastGameDa
     }));
   };
   const handleNextFinger = (Index: number) => {
-    const targetData = keyData[typingText.charAt(Index)];
+    const targetData = typingText.charAt(Index) !== "\n" ? keyData[typingText.charAt(Index)] : keyData.Enter;
     if (targetData.keyType === "shift") {
       if (targetData.hand === "left") {
         setNextFinger({
@@ -171,7 +171,7 @@ const GamePage: React.FC<Props> = ({ codeContent, language, gameData, pastGameDa
       // 現状はmac-jisの\でしかoption Keyは使わない。
       setNextFinger({
         leftHand: keyData.option.finger,
-        rightHand: null,
+        rightHand: targetData.finger,
       });
       // 以下default Keyの条件分岐
     } else if (targetData.hand === "left") {
@@ -287,6 +287,10 @@ const GamePage: React.FC<Props> = ({ codeContent, language, gameData, pastGameDa
     handleNextFinger(0);
   };
 
+  // Enterを押すべき時に何も表示されないと分かりづらいので追加
+  let currText = typingText[currentIndex];
+  if (currText === "\n") currText = "↩︎\n";
+
   return (
     <StyledEngineProvider injectFirst>
       <Header />
@@ -300,9 +304,9 @@ const GamePage: React.FC<Props> = ({ codeContent, language, gameData, pastGameDa
 
               {/* for incorrect letters */}
               {isMissType ? (
-                <Typography className={classes.redFont}>{typingText[currentIndex]}</Typography>
+                <Typography className={classes.redFont}>{currText}</Typography>
               ) : (
-                <Typography className={classes.blackFont}>{typingText[currentIndex]}</Typography>
+                <Typography className={classes.blackFont}>{currText}</Typography>
               )}
 
               {/* for remaining letters */}
