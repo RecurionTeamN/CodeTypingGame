@@ -1,26 +1,37 @@
 import { SelectChangeEvent, Button, TextField, Stack, Box, Grid } from "@mui/material";
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import MySelect from "./MySelect";
 import HomeModal from "./HomeModal";
 import TypingLetters from "./TypingLetters";
-import codeData from "./CodeContentData";
+import codeData, { Language, CodeTitle } from "./CodeContentData";
+import { keyboardData, KeyboardData } from "../../data/keyboardData";
 
-type LangType = typeof codeData;
-type Language = keyof LangType;
-type CodeContents = typeof codeData[Language];
-type CodeTitles = keyof CodeContents;
+const keyboards = Object.keys(keyboardData);
+const languages = Object.keys(codeData);
 
-const keyboards = ["Japan", "US"];
-const languages: string[] = Object.keys(codeData);
+// refactoring to match grobal state from Container Compenent
 
-const HomePage = () => {
+export type UserSetting = {
+  userName: string;
+  keyboardType: keyof KeyboardData;
+  codeLang: Language | string;
+  codeTitle: CodeTitle | "Personal Set Saved";
+  codeContent: string;
+};
+
+type Props = {
+  userSetting: UserSetting;
+  commitSetting: React.Dispatch<React.SetStateAction<UserSetting>>;
+};
+
+const HomePage: React.FC<Props> = ({ userSetting, commitSetting }) => {
   const navigate = useNavigate();
-
-  const nameRef = useRef("");
-  const [keyboard, setKeyboard] = useState("");
-  const [language, setLanguage] = useState("");
-  const [codeOption, setCodeOption] = useState<string[]>([]);
+  const [name, setName] = useState(userSetting.userName);
+  const [keyboard, setKeyboard] = useState(userSetting.keyboardType);
+  const [language, setLanguage] = useState<Language | string>();
+  const [title, setCodeTitle] = useState<string>("");
+  const [codeTitleArr, setCodeTitleArr] = useState<string[]>([]);
   const [code, setCode] = useState<string>("");
   const [personalSetting, setPersonalSetting] = useState({ language: "", code: "" });
 
@@ -28,44 +39,34 @@ const HomePage = () => {
   const [isShowingPersonalSetting, setIsShowingPersonalSetting] = useState(false);
 
   const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
-    nameRef.current = event.target.value;
+    setName(event.target.value);
   };
 
   const handleKeyboardChange = (event: SelectChangeEvent<string>): void => {
-    setKeyboard(event.target.value);
+    setKeyboard(event.target.value as keyof KeyboardData);
   };
 
   const handleLanguageChange = (event: SelectChangeEvent<string>): void => {
-    const selectedLanguage: Language = event.target.value as Language;
-
-    // 選択された言語のデフォルトコード一覧
-    const selectedCodes: CodeContents = codeData[selectedLanguage];
-    const selectedCodesKeys: string[] = Object.keys(selectedCodes);
-
-    setLanguage(event.target.value);
-    // 選択された言語の初期設定コード一覧が、コード選択欄の候補として表示されるように設定する
-    setCodeOption(selectedCodesKeys);
-
-    // コードが選択済みの場合にはリセットする
-    if (code !== "") {
-      setCode("");
-      const codeSelector = document.querySelector("#code-select");
-      if (codeSelector !== null) {
-        codeSelector.childNodes[0].nodeValue = null;
-      }
+    setLanguage(event.target.value as Language);
+    setCodeTitle("");
+    setCode("");
+    setCodeTitleArr(Object.keys(codeData[event.target.value as Language]));
+    const codeSelector = document.querySelector("#code-select");
+    if (codeSelector !== null) {
+      codeSelector.childNodes[0].nodeValue = null;
     }
   };
 
   const handleCodeChange = (event: SelectChangeEvent<string>): void => {
-    const codeOptions: CodeContents = codeData[language as Language];
-    const selectedCodeTitle: CodeTitles = event.target.value as CodeTitles;
-    setCode(codeOptions[selectedCodeTitle]);
+    setCodeTitle(event.target.value as CodeTitle);
+    setCode(codeData[language as Language][event.target.value as CodeTitle]);
   };
 
   const toggleModal = (): void => setIsModalOpen(!isModalOpen);
 
   const resetDefaultSetting = (): void => {
     setLanguage("");
+    setCodeTitle("");
     setCode("");
   };
 
@@ -74,20 +75,32 @@ const HomePage = () => {
   };
 
   const startGame = (): void => {
-    if (personalSetting.language === "" && language !== "" && code !== "" && keyboard !== "") {
+    if (!isShowingPersonalSetting && code !== "") {
       // 必須項目が設定されている、かつ、一度も personal setting が行われていない場合
-      navigate("/game", { state: { language, code, keyboard } });
-    } else if (isShowingPersonalSetting && keyboard !== "" && language === "" && code === "") {
+      commitSetting({
+        userName: name,
+        keyboardType: keyboard,
+        // code!=""よりlanguageとtitleの型は保証される。
+        codeLang: language as Language,
+        codeTitle: title as CodeTitle,
+        codeContent: code,
+      });
+    } else if (isShowingPersonalSetting) {
       // personal setting を使用する場合
-      navigate("/game", { state: { language: personalSetting.language, code: personalSetting.code, keyboard } });
-    } else if (personalSetting.language !== "" && !isShowingPersonalSetting && language !== "" && code !== "") {
-      // personal setting が設定された後に default setting に切り替えた場合
-      navigate("/game", { state: { language: personalSetting.language, code: personalSetting.code, keyboard } });
+      commitSetting({
+        userName: name,
+        keyboardType: keyboard,
+        codeLang: personalSetting.language,
+        codeTitle: "Personal Set Saved",
+        codeContent: personalSetting.code,
+      });
     } else {
       // 必須項目が設定されていない場合
       // eslint-disable-next-line no-alert
       alert("Select keyboard type, language, and code.");
+      return;
     }
+    navigate("/game");
   };
 
   return (
@@ -101,19 +114,24 @@ const HomePage = () => {
     >
       <TypingLetters initLetters="Recursion Typing Game!" secondLetters="Hurry up !!!! Hurry up!!!!!!" />
       <Stack spacing={3} paddingTop={5}>
-        <TextField inputRef={nameRef} label="Name" onChange={handleNameChange} />
-        <MySelect label="Keyboard Type" options={keyboards} onchange={handleKeyboardChange} />
+        <TextField label="Name" defaultValue={userSetting.userName} onChange={handleNameChange} />
+        <MySelect
+          label="Keyboard Type"
+          options={keyboards}
+          defaultValue={userSetting.keyboardType}
+          onchange={handleKeyboardChange}
+        />
 
         {/* default setting を使う場合には言語とコードの選択欄を表示する */}
         {!isShowingPersonalSetting && (
           <>
             <MySelect label="Language" options={languages} onchange={handleLanguageChange} />
-            <MySelect label="Code Select" options={codeOption} onchange={handleCodeChange} />
+            <MySelect label="Code Select" options={codeTitleArr} onchange={handleCodeChange} />
           </>
         )}
 
         {/* personal setting が設定されている場合には default setting 用のフォームを表示する */}
-        {personalSetting.language !== "" && isShowingPersonalSetting && (
+        {isShowingPersonalSetting && (
           <>
             <TextField disabled label="Language" value={personalSetting.language} />
             <TextField

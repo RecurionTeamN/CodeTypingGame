@@ -5,69 +5,36 @@ import SimpleResult from "./SimpleResult";
 import BestScores from "../../components/BestScores";
 import KeyStatistics from "./KeyStatistics";
 import FingerStatistcs from "./FingerStatistics";
+import { KeyData } from "../../data/keyboardData";
 
 // 子コンポーネントで使用する予定のデータ（現状はダミー）とその型
-type Result = {
+
+type Props = {
   language: string;
-  accuracy: number;
-  speed: number;
-  detailtData: KeyData[];
+  gameData: {
+    speed: number;
+    accuracy: number;
+    keyData: KeyData;
+  };
+  bestScores: {
+    [langName: string]: {
+      speed: number;
+      accuracy: number;
+    };
+  };
 };
-
-type KeyData = {
-  keyName: string;
-  hand: Hand;
-  finger: Finger;
-  pushCount: number;
-  missCount: number;
-  timeSecCount: number;
-};
-
-type Hand = "left" | "right";
-type Finger = "thumb" | "first" | "second" | "third" | "fourth";
-
-const dummyResult: Result = {
-  language: "Python",
-  accuracy: 90,
-  speed: 54,
-  detailtData: [
-    { keyName: "a", hand: "left", finger: "fourth", pushCount: 10, missCount: 2, timeSecCount: 10 },
-    { keyName: "s", hand: "left", finger: "third", pushCount: 20, missCount: 3, timeSecCount: 20 },
-    { keyName: "d", hand: "left", finger: "second", pushCount: 30, missCount: 4, timeSecCount: 30 },
-    { keyName: "f", hand: "left", finger: "first", pushCount: 40, missCount: 3, timeSecCount: 40 },
-    { keyName: "j", hand: "right", finger: "first", pushCount: 10, missCount: 0, timeSecCount: 10 },
-    { keyName: "k", hand: "right", finger: "second", pushCount: 20, missCount: 1, timeSecCount: 20 },
-    { keyName: "l", hand: "right", finger: "third", pushCount: 30, missCount: 2, timeSecCount: 30 },
-    { keyName: ";", hand: "right", finger: "fourth", pushCount: 40, missCount: 5, timeSecCount: 40 },
-    { keyName: "space", hand: "left", finger: "thumb", pushCount: 40, missCount: 4, timeSecCount: 40 },
-  ],
-};
-
-type Best = {
-  language: string;
-  accuracy: number;
-  speed: number;
-};
-
-const dummyBestScores: Best[] = [
-  { language: "Python", accuracy: 80, speed: 30 },
-  { language: "Java", accuracy: 75, speed: 45 },
-  { language: "JavaScript", accuracy: 85, speed: 35 },
-  { language: "PHP", accuracy: 90, speed: 30 },
-  { language: "TypeScript", accuracy: 99, speed: 50 },
-];
 
 // ダミーデータを渡して、子コンポーネントでpropsが上手く処理されることを確認する。
-const ResultPage = () => (
+const ResultPage: React.FC<Props> = ({ language, gameData, bestScores }) => (
   <div>
     <ResultPageHeader />
     <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
       <Box sx={{ display: "flex", flexDirection: "row", justifyContent: "space-evenly" }}>
-        <SimpleResult language={dummyResult.language} accuracy={dummyResult.accuracy} speed={dummyResult.speed} />
-        <BestScores data={dummyBestScores} />
+        <SimpleResult language={language} accuracy={gameData.accuracy} speed={gameData.speed} />
+        <BestScores data={bestScores} />
       </Box>
-      <KeyStatistics data={dummyResult.detailtData} />
-      <FingerStatistcs data={dummyResult.detailtData} />
+      <KeyStatistics data={gameData.keyData} />
+      <FingerStatistcs data={gameData.keyData} />
     </Box>
   </div>
 );

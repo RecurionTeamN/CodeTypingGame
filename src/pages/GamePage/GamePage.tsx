@@ -6,6 +6,7 @@ import GameHeader from "./GameHeader";
 import SuccessModal from "./SuccessModal";
 import Header from "../../components/Header";
 import KeyboardHand from "./KeyboardHand";
+import { KeyData } from "../../data/keyboardData";
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
@@ -50,13 +51,31 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-const GamePage = () => {
+type Props = {
+  codeContent: string;
+  gameData: {
+    speed: number;
+    accuracy: number;
+    keyData: KeyData;
+  };
+  commitResult: React.Dispatch<
+    React.SetStateAction<{
+      speed: number;
+      accuracy: number;
+      keyData: KeyData;
+    }>
+  >;
+};
+
+type NextFinger = {
+  leftHand: "thumb" | "first" | "second" | "third" | "fourth" | null;
+  rightHand: "thumb" | "first" | "second" | "third" | "fourth" | null;
+};
+
+const GamePage: React.FC<Props> = ({ codeContent, gameData, commitResult }) => {
   const classes = useStyles();
 
-  // temporary typing text
-  const typingText =
-    "import React, { useState, useEffect, useRef } from 'react';\nconst [isMissType, setIsMissType] = useState<boolean>(false);\nif (!started) {\n  setStarted(true);\n}\nconst timer = useRef<NodeJS.Timer | null>(null);";
-  // const typingText = "import React\n";
+  const typingText = codeContent;
 
   // const [typingText, setTypingText] = useState("");
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -66,6 +85,71 @@ const GamePage = () => {
   const [started, setStarted] = useState(false);
   const [timeTyping, setTimeTyping] = useState(0);
   const [successModalOpen, setSuccessModalOpen] = useState(false);
+
+  const [keyData, setKeyData] = useState(gameData.keyData);
+  const [lastAnsTime, setLastAnsTime] = useState(0);
+  const [nextFinger, setNextFinger] = useState<NextFinger>({ leftHand: null, rightHand: null });
+
+  const addKeyPushCount = (keyName: string): void => {
+    const targetData = keyData[keyName];
+    const cnt = (targetData.pushCount ?? 0) + 1;
+    targetData.pushCount = cnt;
+    setKeyData((prev) => ({
+      ...prev,
+      [keyName]: targetData,
+    }));
+  };
+  const addKeyMissCount = (keyName: string): void => {
+    const targetData = keyData[keyName];
+    const cnt = (targetData.missCount ?? 0) + 1;
+    targetData.missCount = cnt;
+    setKeyData((prev) => ({
+      ...prev,
+      [keyName]: targetData,
+    }));
+  };
+  const addKeyTimeCount = (keyName: string): void => {
+    const targetData = keyData[keyName];
+    const cnt = (targetData.timeSecCount ?? 0) + (timeTyping - lastAnsTime) / 1000;
+    targetData.timeSecCount = cnt;
+    setKeyData((prev) => ({
+      ...prev,
+      [keyName]: targetData,
+    }));
+  };
+  const handleNextFinger = (Index: number) => {
+    const targetData = keyData[typingText.charAt(Index)];
+    if (targetData.keyType === "shift") {
+      if (targetData.hand === "left") {
+        setNextFinger({
+          leftHand: targetData.finger,
+          rightHand: keyData["r-Shift"].finger,
+        });
+      } else {
+        setNextFinger({
+          leftHand: keyData["l-Shift"].finger,
+          rightHand: targetData.finger,
+        });
+      }
+    } else if (targetData.keyType === "option") {
+      // 現状はmac-jisの\でしかoption Keyは使わない。
+      setNextFinger({
+        leftHand: keyData.option.finger,
+        rightHand: null,
+      });
+      // 以下default Keyの条件分岐
+    } else if (targetData.hand === "left") {
+      setNextFinger({
+        leftHand: targetData.finger,
+        rightHand: null,
+      });
+    } else {
+      setNextFinger({
+        leftHand: null,
+        rightHand: targetData.finger,
+      });
+    }
+  };
 
   const timer = useRef<NodeJS.Timer | null>(null);
 
@@ -81,10 +165,15 @@ const GamePage = () => {
       }, 10);
     }
 
+    addKeyPushCount(e.key);
+
     // 改行の処理
     if (typingText[currentIndex] === "\n") {
       if (e.key === "Enter") {
         setIsMissType(false);
+
+        addKeyTimeCount(e.key);
+        setLastAnsTime(timeTyping);
 
         // while ループで改行後に続くタブを i を使ってスキップする
         let i = 1;
@@ -99,22 +188,34 @@ const GamePage = () => {
           setSuccessModalOpen(true);
         } else {
           setCurrentIndex(currentIndex + i);
+          handleNextFinger(currentIndex + i);
         }
       } else {
         setIsMissType(true);
         setMissCount(missCount + 1);
+        addKeyMissCount("Enter");
       }
     } else if (e.key === typingText[currentIndex]) {
       setIsMissType(false);
       setCurrentIndex(currentIndex + 1);
+
+      addKeyTimeCount(e.key);
+      setLastAnsTime(timeTyping);
+
       if (currentIndex + 1 >= typingText.length) {
         clearInterval(timer.current as NodeJS.Timeout);
         setFinished(true);
         setSuccessModalOpen(true);
-      }
+        commitResult({
+          speed: Math.floor((typingText.length / (timeTyping / 1000)) * 60),
+          accuracy: Math.floor((100 * typingText.length) / (typingText.length + missCount)),
+          keyData,
+        });
+      } else handleNextFinger(currentIndex + 1);
     } else {
       setIsMissType(true);
       setMissCount(missCount + 1);
+      addKeyMissCount(typingText[currentIndex]);
     }
   };
 
@@ -128,6 +229,9 @@ const GamePage = () => {
     setMissCount(0);
     setFinished(false);
     setStarted(false);
+    setKeyData(gameData.keyData);
+    setLastAnsTime(0);
+    handleNextFinger(0);
   };
 
   return (
@@ -156,7 +260,7 @@ const GamePage = () => {
           </CardContent>
         </Card>
 
-        <KeyboardHand />
+        <KeyboardHand leftFin={nextFinger.leftHand} rightFin={nextFinger.rightHand} />
       </div>
 
       <SuccessModal
