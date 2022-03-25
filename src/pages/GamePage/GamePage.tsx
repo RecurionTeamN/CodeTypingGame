@@ -195,8 +195,8 @@ const GamePage: React.FC<Props> = ({ codeContent, language, gameData, pastGameDa
     const date = new Date();
     const todayStr = `${date.getFullYear()}/${date.getMonth()}/${date.getDate()}`;
     // 既に同じ日にゲーム記録がある場合とない場合
-    if (pastData.history[todayStr]) pastData.history[todayStr].push({ speed: speed, accuracy: accuracy });
-    else pastData.history[todayStr] = [{ speed: speed, accuracy: accuracy }];
+    if (pastData.history[todayStr]) pastData.history[todayStr].push({ speed, accuracy });
+    else pastData.history[todayStr] = [{ speed, accuracy }];
     updateHistory(pastData);
   };
   const calSpeedKPM = (textLength: number, totalTimeMilliSec: number) =>
