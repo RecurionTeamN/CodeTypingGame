@@ -15,7 +15,7 @@ const languages = Object.keys(codeData);
 export type UserSetting = {
   userName: string;
   keyboardType: keyof KeyboardData;
-  codeLang: Language | string;
+  codeLang: Language;
   codeTitle: CodeTitle | "Personal Set Saved";
   codeContent: string;
 };
@@ -90,7 +90,7 @@ const HomePage: React.FC<Props> = ({ userSetting, commitSetting }) => {
       commitSetting({
         userName: name,
         keyboardType: keyboard,
-        codeLang: personalSetting.language,
+        codeLang: personalSetting.language as Language,
         codeTitle: "Personal Set Saved",
         codeContent: personalSetting.code,
       });

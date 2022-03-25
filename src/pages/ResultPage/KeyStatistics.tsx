@@ -11,7 +11,8 @@ const KeyStatistics: React.VFC<Props> = ({ data }) => {
     const missCount = data[keyName].missCount ?? 0;
     const timeSecCount = data[keyName].timeSecCount ?? 0;
     const accuracy = Math.floor(((pushCount - missCount) / pushCount) * 100);
-    const speed = (pushCount - missCount) / (timeSecCount / 60);
+    const speed = Math.floor((pushCount - missCount) / (timeSecCount / 60));
+    if (Number.isNaN(accuracy)) return <div key={keyName}>[{keyName}]: no data</div>;
     return (
       <div key={keyName}>
         [{keyName}]: {accuracy}%, {speed}kpm

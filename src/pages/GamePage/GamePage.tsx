@@ -7,6 +7,7 @@ import SuccessModal from "./SuccessModal";
 import Header from "../../components/Header";
 import KeyboardHand from "./KeyboardHand";
 import { KeyData } from "../../data/keyboardData";
+import { Language } from "../HomePage/CodeContentData";
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
@@ -53,16 +54,51 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 type Props = {
   codeContent: string;
+  language: Language;
   gameData: {
     speed: number;
     accuracy: number;
     keyData: KeyData;
+  };
+  pastGameData: {
+    history: {
+      [date: string]: [
+        {
+          speed: number;
+          accuracy: number;
+        }
+      ];
+    };
+    bestScores: {
+      [codeLang in Language]: {
+        speed: number;
+        accuracy: number;
+      };
+    };
   };
   commitResult: React.Dispatch<
     React.SetStateAction<{
       speed: number;
       accuracy: number;
       keyData: KeyData;
+    }>
+  >;
+  updateHistory: React.Dispatch<
+    React.SetStateAction<{
+      history: {
+        [date: string]: [
+          {
+            speed: number;
+            accuracy: number;
+          }
+        ];
+      };
+      bestScores: {
+        [codeLang in Language]: {
+          speed: number;
+          accuracy: number;
+        };
+      };
     }>
   >;
 };
@@ -72,7 +108,7 @@ type NextFinger = {
   rightHand: "thumb" | "first" | "second" | "third" | "fourth" | null;
 };
 
-const GamePage: React.FC<Props> = ({ codeContent, gameData, commitResult }) => {
+const GamePage: React.FC<Props> = ({ codeContent, language, gameData, pastGameData, commitResult, updateHistory }) => {
   const classes = useStyles();
 
   const typingText = codeContent;
@@ -150,6 +186,22 @@ const GamePage: React.FC<Props> = ({ codeContent, gameData, commitResult }) => {
       });
     }
   };
+  const handleGameHistory = (speed: number, accuracy: number) => {
+    const pastData = pastGameData;
+    if (pastData.bestScores[language].speed < speed && pastData.bestScores[language].accuracy < accuracy) {
+      pastData.bestScores[language].speed = speed;
+      pastData.bestScores[language].accuracy = accuracy;
+    }
+    const date = new Date();
+    const todayStr = `${date.getFullYear()}/${date.getMonth()}/${date.getDate()}`;
+    // 既に同じ日にゲーム記録がある場合とない場合
+    if (pastData.history[todayStr]) pastData.history[todayStr].push({ speed: speed, accuracy: accuracy });
+    else pastData.history[todayStr] = [{ speed: speed, accuracy: accuracy }];
+    updateHistory(pastData);
+  };
+  const calSpeedKPM = (textLength: number, totalTimeMilliSec: number) =>
+    Math.floor(60 * (textLength / (totalTimeMilliSec / 1000)));
+  const calAccuracy = (textLength: number, missCnt: number) => Math.floor((100 * textLength) / (textLength + missCnt));
 
   const timer = useRef<NodeJS.Timer | null>(null);
 
@@ -207,10 +259,11 @@ const GamePage: React.FC<Props> = ({ codeContent, gameData, commitResult }) => {
         setFinished(true);
         setSuccessModalOpen(true);
         commitResult({
-          speed: Math.floor((typingText.length / (timeTyping / 1000)) * 60),
-          accuracy: Math.floor((100 * typingText.length) / (typingText.length + missCount)),
+          speed: calSpeedKPM(typingText.length, timeTyping),
+          accuracy: calAccuracy(typingText.length, missCount),
           keyData,
         });
+        handleGameHistory(calSpeedKPM(typingText.length, timeTyping), calAccuracy(typingText.length, missCount));
       } else handleNextFinger(currentIndex + 1);
     } else {
       setIsMissType(true);

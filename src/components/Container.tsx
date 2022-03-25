@@ -16,7 +16,7 @@ const Container = () => {
     codeLang: Language;
     codeTitle: CodeTitle | "Personal Set Saved";
     codeContent: string;
-    gameHistory: [{ date: string; results: [{ speed: number; accuracy: number }] }];
+    gameHistory: { [date: string]: [{ speed: number; accuracy: number }] };
     bestScores: {
       [keyName in keyof typeof CodeContentData]: {
         speed: number;
@@ -31,17 +31,14 @@ const Container = () => {
     codeLang: "Python",
     codeTitle: "title1",
     codeContent: "Python content 1",
-    gameHistory: [
-      {
-        date: "2022/03/01",
-        results: [
-          {
-            speed: 0,
-            accuracy: 0,
-          },
-        ],
-      },
-    ],
+    gameHistory: {
+      "2022/03/01": [
+        {
+          speed: 0,
+          accuracy: 0,
+        },
+      ],
+    },
     bestScores: {
       Java: {
         accuracy: 0,
@@ -85,7 +82,16 @@ const Container = () => {
           <Route path="/" element={<HomePage userSetting={userSetting} commitSetting={setUserSetting} />} />
           <Route
             path="/game"
-            element={<GamePage codeContent={userSetting.codeContent} gameData={gameData} commitResult={setGameData} />}
+            element={
+              <GamePage
+                codeContent={userSetting.codeContent}
+                language={userSetting.codeLang}
+                gameData={gameData}
+                pastGameData={pastGameData}
+                commitResult={setGameData}
+                updateHistory={setPastGame}
+              />
+            }
           />
           <Route
             path="/results"
