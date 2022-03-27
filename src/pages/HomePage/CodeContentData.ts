@@ -17,3 +17,7 @@ const codeData = {
 };
 
 export default codeData;
+export type Language = keyof typeof codeData;
+// 以下の型定義を実現するためにはtitleは全言語で一致している必要がある。
+// デフォルトコード追加時には全ての言語で追加しないといけないことを注意する。
+export type CodeTitle = keyof typeof codeData[Language];

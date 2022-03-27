@@ -1,22 +1,14 @@
 import React from "react";
 import Box from "@mui/material/Box";
 import HandSVG from "../../components/HandSVG";
+import { KeyData } from "../../data/keyboardData";
 
 type Hand = "left" | "right";
 
 type Finger = "thumb" | "first" | "second" | "third" | "fourth";
 
-type KeyData = {
-  keyName: string;
-  hand: Hand;
-  finger: Finger;
-  pushCount: number;
-  missCount: number;
-  timeSecCount: number;
-};
-
 type Props = {
-  data: KeyData[];
+  data: KeyData;
 };
 
 const FingerStatistics: React.VFC<Props> = ({ data }) => {
@@ -41,10 +33,11 @@ const FingerStatistics: React.VFC<Props> = ({ data }) => {
       fourth: { pushCountSum: 0, missCountSum: 0, timeSecSum: 0, color: "#fff" },
     },
   };
-  data.forEach((element) => {
-    fingerData[element.hand][element.finger].pushCountSum += element.pushCount;
-    fingerData[element.hand][element.finger].missCountSum += element.missCount;
-    fingerData[element.hand][element.finger].timeSecSum += element.timeSecCount;
+  (Object.keys(data) as (keyof typeof data)[]).forEach((keyName) => {
+    const keyData = data[keyName];
+    fingerData[keyData.hand][keyData.finger].pushCountSum += keyData.pushCount ?? 0;
+    fingerData[keyData.hand][keyData.finger].missCountSum += keyData.missCount ?? 0;
+    fingerData[keyData.hand][keyData.finger].timeSecSum += keyData.timeSecCount ?? 0;
   });
   // 指ごとの統計情報を表示する
   // 指ごとの統計情報に親指は不要なので各手の指配列をfilter()する
@@ -59,33 +52,34 @@ const FingerStatistics: React.VFC<Props> = ({ data }) => {
         const accuracy = Math.floor(
           ((currFinData.pushCountSum - currFinData.missCountSum) / currFinData.pushCountSum) * 100
         );
-        const speed = (currFinData.pushCountSum - currFinData.missCountSum) / (currFinData.timeSecSum / 60);
+        const speed = Math.floor((currFinData.pushCountSum - currFinData.missCountSum) / (currFinData.timeSecSum / 60));
 
-        if (speed >= 80) fingerData[hand][finger].color = "#0000FF";
-        else if (speed >= 60) fingerData[hand][finger].color = "#0099FF";
-        else if (speed >= 40) fingerData[hand][finger].color = "#00CCFF";
-        else if (speed >= 20) fingerData[hand][finger].color = "#00FFFF";
+        // 使用されていない指の値はNaNになるため、条件分岐で色をつけない。
+        if (Number.isNaN(speed)) fingerData[hand][finger].color = "#e6e6e6";
+        else if (speed >= 200) fingerData[hand][finger].color = "#0000FF";
+        else if (speed >= 150) fingerData[hand][finger].color = "#0099FF";
+        else if (speed >= 100) fingerData[hand][finger].color = "#00CCFF";
+        else if (speed >= 50) fingerData[hand][finger].color = "#00FFFF";
         else fingerData[hand][finger].color = "#CCFFFF";
 
         return (
           <Box key={finger} sx={{ px: 2 }}>
             {finger} <br />
-            {accuracy}% <br />
-            {speed}wpm <br />
+            {Number.isNaN(accuracy) ? "-" : accuracy}% <br />
+            {Number.isNaN(speed) ? "-" : speed}kpm <br />
           </Box>
         );
       });
-
+    const color = {
+      first: fingerData[hand].first.color,
+      second: fingerData[hand].second.color,
+      third: fingerData[hand].third.color,
+      fourth: fingerData[hand].fourth.color,
+    };
     return (
       <div key={hand}>
         <h4>{hand} fingers</h4>
-        <HandSVG
-          hand={hand}
-          firstColor={fingerData[hand].first.color}
-          secondColor={fingerData[hand].second.color}
-          thirdColor={fingerData[hand].third.color}
-          fourthColor={fingerData[hand].fourth.color}
-        />
+        <HandSVG hand={hand} color={color} />
         <Box sx={{ display: "flex", justifyContent: "space-evenly" }}>{eachHandResults}</Box>
       </div>
     );

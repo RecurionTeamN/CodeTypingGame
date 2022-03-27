@@ -20,9 +20,17 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const KeyboardHand = () => {
+type Props = {
+  leftFin: "first" | "thumb" | "second" | "third" | "fourth" | null;
+  rightFin: "first" | "thumb" | "second" | "third" | "fourth" | null;
+};
+
+const KeyboardHand: React.FC<Props> = ({ leftFin, rightFin }) => {
   const classes = useStyles();
   const [layoutName, setLayoutName] = useState("default");
+
+  const leftHandColor = leftFin ? { [leftFin]: "#0000FF" } : undefined;
+  const rightHandColor = rightFin ? { [rightFin]: "#0000FF" } : undefined;
 
   document.onkeydown = (e) => {
     if (e.key.toLowerCase() === "shift") {
@@ -40,8 +48,8 @@ const KeyboardHand = () => {
     <div className={classes.keyboardContainer}>
       <Keyboard layoutName={layoutName} />
       <div className={classes.handsContainer}>
-        <HandSVG hand="left" />
-        <HandSVG hand="right" />
+        <HandSVG hand="left" color={leftHandColor} />
+        <HandSVG hand="right" color={rightHandColor} />
       </div>
     </div>
   );

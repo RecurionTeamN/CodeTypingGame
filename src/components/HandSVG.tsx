@@ -4,27 +4,39 @@ type Props = {
   hand: "left" | "right";
   height?: string;
   width?: string;
-  palmColor?: string;
-  thumbColor?: string;
-  firstColor?: string;
-  secondColor?: string;
-  thirdColor?: string;
-  fourthColor?: string;
+  color?: {
+    palm?: string;
+    thumb?: string;
+    first?: string;
+    second?: string;
+    third?: string;
+    fourth?: string;
+  };
 };
 
 const HandSVG: React.VFC<Props> = ({
   hand,
   height = "390",
   width = "450",
-  palmColor = "#e6e6e6",
-  thumbColor = "#e6e6e6",
-  firstColor = "#e6e6e6",
-  secondColor = "#e6e6e6",
-  thirdColor = "#e6e6e6",
-  fourthColor = "#e6e6e6",
+  // propsでcolorがない場合のデフォルト設定
+  color = {
+    palm: "#e6e6e6",
+    thumb: "#e6e6e6",
+    first: "#e6e6e6",
+    second: "#e6e6e6",
+    third: "#e6e6e6",
+    fourth: "#e6e6e6",
+  },
 }) => {
   // 元のsvgは右手の画像なので左手は左右反転する。
   const transformArg = hand === "left" ? "scale(-1, 1)" : "scale(1, 1)";
+  // propsで色情報が渡された場合、色情報がない指が真っ黒に表示されるため色情報を再定義。
+  const palm = color.palm ?? "#e6e6e6";
+  const thumb = color.thumb ?? "#e6e6e6";
+  const first = color.first ?? "#e6e6e6";
+  const second = color.second ?? "#e6e6e6";
+  const third = color.third ?? "#e6e6e6";
+  const fourth = color.fourth ?? "#e6e6e6";
   return (
     // svgは指毎のpathに分割しており、与えられたpropsに応じて指毎の色を変えられる。デフォルトはグレー。
     <svg
@@ -39,14 +51,14 @@ const HandSVG: React.VFC<Props> = ({
       <defs id="defs2" />
       <g id="layer1">
         <path
-          fill={palmColor}
+          fill={palm}
           stroke="none"
           strokeWidth="0.389811"
           d="m 56.837021,142.09569 c -1.367279,-2.50033 -3.145652,-4.27439 -3.623238,-4.51936 -2.926974,-1.50133 -6.217192,-4.21852 -10.46856,-8.72475 -2.675255,-2.83563 -6.060548,-7.7102 -7.964897,-9.3325 -7.48647,-6.37765 -8.149925,-6.46584 -9.720378,-10.57717 -0.797605,-2.08807 -1.642293,-5.00748 -1.928051,-4.33631 0,0 3.854599,-2.75766 7.981719,-5.857719 4.127119,-3.100067 8.688808,-6.856877 9.35835,-7.569737 1.788803,-1.90453 3.834825,-5.30177 3.77513,-7.01973 -0.02421,-0.69661 0.860571,-3.48344 1.057487,-8.47551 0.170484,-4.32196 -0.444527,-7.70358 -0.1577,-8.02491 0.500867,-0.56111 11.635576,-4.58513 15.121361,-4.33864 2.044827,0.1446 10.449477,1.38517 20.138317,2.80207 0,0 5.08537,3.46553 8.50715,5.67995 l 6.22143,4.02621 c 1.67226,1.60979 3.30694,3.03173 5.340199,6.44644 l 5.34018,6.44644 -0.91714,4.46826 c -1.86208,9.071916 -2.63344,23.658926 -6.655519,28.766146 -2.12772,2.70176 0.14993,7.39787 1.15405,9.19847 1.591809,2.85444 1.153679,4.55706 0.755959,3.73772 -0.248664,-0.51227 -6.504299,4.23792 -19.207559,7.39597 -9.0925,2.26039 -19.800947,4.52858 -21.065674,4.11595 -0.418558,-0.13655 -1.296974,-1.11508 -3.042616,-4.30729 z"
           id="palm"
         />
         <path
-          fill={thumbColor}
+          fill={thumb}
           stroke="none"
           strokeWidth="0.264583px"
           strokeLinecap="butt"
@@ -56,7 +68,7 @@ const HandSVG: React.VFC<Props> = ({
           id="thumb"
         />
         <path
-          fill={firstColor}
+          fill={first}
           stroke="none"
           strokeWidth="0.264583px"
           strokeLinecap="butt"
@@ -66,7 +78,7 @@ const HandSVG: React.VFC<Props> = ({
           id="first"
         />
         <path
-          fill={secondColor}
+          fill={second}
           stroke="none"
           strokeWidth="0.264583px"
           strokeLinecap="butt"
@@ -76,7 +88,7 @@ const HandSVG: React.VFC<Props> = ({
           id="second"
         />
         <path
-          fill={thirdColor}
+          fill={third}
           stroke="none"
           strokeWidth="0.264583px"
           strokeLinecap="butt"
@@ -86,7 +98,7 @@ const HandSVG: React.VFC<Props> = ({
           id="third"
         />
         <path
-          fill={fourthColor}
+          fill={fourth}
           stroke="none"
           strokeWidth="0.264583px"
           strokeLinecap="butt"

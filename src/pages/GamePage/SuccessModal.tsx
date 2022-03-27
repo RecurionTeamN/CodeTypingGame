@@ -1,6 +1,7 @@
 import React from "react";
 import { makeStyles } from "@mui/styles";
-import { Modal, Backdrop, Slide, Box, Typography } from "@mui/material";
+import { Modal, Backdrop, Slide, Box, Typography, Button } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 import formatTime from "../../utils/formatTime";
 
@@ -42,7 +43,8 @@ const useStyles = makeStyles((theme) => ({
 const SuccessModal: React.VFC<Props> = ({ result, successModalOpen, successModalClose }) => {
   const classes = useStyles();
   const cpm = ((result.textLength / result.timeTyping) * 1000 * 60).toFixed(0);
-
+  const navigate = useNavigate();
+  const goResultPage = () => navigate("/results");
   return (
     <div>
       <Modal
@@ -70,6 +72,10 @@ const SuccessModal: React.VFC<Props> = ({ result, successModalOpen, successModal
               精度: {((result.textLength / (result.textLength + result.missCount)) * 100).toFixed(1)}%<br />
               CPM(1分間あたりの入力文字数): {cpm}
               <br />
+              結果を確認する:{" "}
+              <Button variant="contained" onClick={goResultPage}>
+                go resultPage
+              </Button>
             </Typography>
           </Box>
         </Slide>
