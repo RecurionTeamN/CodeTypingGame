@@ -4,14 +4,17 @@ export type KeyData = {
     position: number[];
     hand: "left" | "right";
     finger: "thumb" | "first" | "second" | "third" | "fourth";
+    pushCount?: number;
+    missCount?: number;
+    timeSecCount?: number;
   };
 };
 
-export type KeyBoardData = {
+export type KeyboardData = {
   [keyboardType in "jis" | "us" | "mac-jis" | "mac-us"]: KeyData;
 };
 
-export const keyboardData: KeyBoardData = {
+export const keyboardData: KeyboardData = {
   jis: {
     半角全角: {
       keyType: "default",
@@ -655,7 +658,7 @@ export const keyboardData: KeyBoardData = {
       hand: "left",
       finger: "third",
     },
-    space: {
+    " ": {
       keyType: "default",
       position: [4, 4],
       hand: "left",
@@ -1317,7 +1320,7 @@ export const keyboardData: KeyBoardData = {
       hand: "left",
       finger: "fourth",
     },
-    space: {
+    " ": {
       keyType: "default",
       position: [4, 3],
       hand: "left",
@@ -1979,7 +1982,7 @@ export const keyboardData: KeyBoardData = {
       hand: "left",
       finger: "third",
     },
-    space: {
+    " ": {
       keyType: "default",
       position: [4, 4],
       hand: "left",
@@ -2623,7 +2626,7 @@ export const keyboardData: KeyBoardData = {
       hand: "left",
       finger: "fourth",
     },
-    space: {
+    " ": {
       keyType: "default",
       position: [4, 3],
       hand: "left",

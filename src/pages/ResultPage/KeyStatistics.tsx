@@ -1,29 +1,21 @@
 import React from "react";
-
-type Hand = "left" | "right";
-
-type Finger = "thumb" | "first" | "second" | "third" | "fourth";
-
-type KeyData = {
-  keyName: string;
-  hand: Hand;
-  finger: Finger;
-  pushCount: number;
-  missCount: number;
-  timeSecCount: number;
-};
+import { KeyData } from "../../data/keyboardData";
 
 type Props = {
-  data: KeyData[];
+  data: KeyData;
 };
 
 const KeyStatistics: React.VFC<Props> = ({ data }) => {
-  const statistics = data.map((keyData) => {
-    const accuracy = Math.floor(((keyData.pushCount - keyData.missCount) / keyData.pushCount) * 100);
-    const speed = (keyData.pushCount - keyData.missCount) / (keyData.timeSecCount / 60);
+  const statistics = (Object.keys(data) as (keyof typeof data)[]).map((keyName) => {
+    const pushCount = data[keyName].pushCount ?? 0;
+    const missCount = data[keyName].missCount ?? 0;
+    const timeSecCount = data[keyName].timeSecCount ?? 0;
+    const accuracy = Math.floor(((pushCount - missCount) / pushCount) * 100);
+    const speed = Math.floor((pushCount - missCount) / (timeSecCount / 60));
+    if (Number.isNaN(accuracy)) return <div key={keyName}>[{keyName}]: no data</div>;
     return (
-      <div key={keyData.keyName}>
-        [{keyData.keyName}]: {accuracy}%, {speed}wpm
+      <div key={keyName}>
+        [{keyName}]: {accuracy}%, {speed}kpm
       </div>
     );
   });

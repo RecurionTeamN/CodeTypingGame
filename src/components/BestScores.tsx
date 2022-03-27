@@ -1,19 +1,20 @@
 import React from "react";
 
 type Best = {
-  language: string;
-  accuracy: number;
-  speed: number;
+  [language: string]: {
+    accuracy: number;
+    speed: number;
+  };
 };
 
 type Props = {
-  data: Best[];
+  data: Best;
 };
 
 const BestScores: React.VFC<Props> = ({ data }) => {
-  const results = data.map((result) => (
-    <li key={result.language}>
-      {result.language}: {result.accuracy}%, {result.speed}wpm
+  const results = Object.keys(data).map((language) => (
+    <li key={language}>
+      {language}: {data[language].accuracy}%, {data[language].speed}kpm
     </li>
   ));
 

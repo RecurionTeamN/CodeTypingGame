@@ -6,6 +6,8 @@ import GameHeader from "./GameHeader";
 import SuccessModal from "./SuccessModal";
 import Header from "../../components/Header";
 import KeyboardHand from "./KeyboardHand";
+import { KeyData } from "../../data/keyboardData";
+import { Language } from "../HomePage/CodeContentData";
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
@@ -50,13 +52,66 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-const GamePage = () => {
+type Props = {
+  codeContent: string;
+  language: Language;
+  gameData: {
+    speed: number;
+    accuracy: number;
+    keyData: KeyData;
+  };
+  pastGameData: {
+    history: {
+      [date: string]: [
+        {
+          speed: number;
+          accuracy: number;
+        }
+      ];
+    };
+    bestScores: {
+      [codeLang in Language]: {
+        speed: number;
+        accuracy: number;
+      };
+    };
+  };
+  commitResult: React.Dispatch<
+    React.SetStateAction<{
+      speed: number;
+      accuracy: number;
+      keyData: KeyData;
+    }>
+  >;
+  updateHistory: React.Dispatch<
+    React.SetStateAction<{
+      history: {
+        [date: string]: [
+          {
+            speed: number;
+            accuracy: number;
+          }
+        ];
+      };
+      bestScores: {
+        [codeLang in Language]: {
+          speed: number;
+          accuracy: number;
+        };
+      };
+    }>
+  >;
+};
+
+type NextFinger = {
+  leftHand: "thumb" | "first" | "second" | "third" | "fourth" | null;
+  rightHand: "thumb" | "first" | "second" | "third" | "fourth" | null;
+};
+
+const GamePage: React.FC<Props> = ({ codeContent, language, gameData, pastGameData, commitResult, updateHistory }) => {
   const classes = useStyles();
 
-  // temporary typing text
-  const typingText =
-    "import React, { useState, useEffect, useRef } from 'react';\nconst [isMissType, setIsMissType] = useState<boolean>(false);\nif (!started) {\n  setStarted(true);\n}\nconst timer = useRef<NodeJS.Timer | null>(null);";
-  // const typingText = "import React\n";
+  const typingText = codeContent;
 
   // const [typingText, setTypingText] = useState("");
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -66,6 +121,87 @@ const GamePage = () => {
   const [started, setStarted] = useState(false);
   const [timeTyping, setTimeTyping] = useState(0);
   const [successModalOpen, setSuccessModalOpen] = useState(false);
+
+  const [keyData, setKeyData] = useState(gameData.keyData);
+  const [lastAnsTime, setLastAnsTime] = useState(0);
+  const [nextFinger, setNextFinger] = useState<NextFinger>({ leftHand: null, rightHand: null });
+
+  const addKeyPushCount = (keyName: string): void => {
+    const targetData = keyData[keyName];
+    const cnt = (targetData.pushCount ?? 0) + 1;
+    targetData.pushCount = cnt;
+    setKeyData((prev) => ({
+      ...prev,
+      [keyName]: targetData,
+    }));
+  };
+  const addKeyMissCount = (keyName: string): void => {
+    const targetData = keyData[keyName];
+    const cnt = (targetData.missCount ?? 0) + 1;
+    targetData.missCount = cnt;
+    setKeyData((prev) => ({
+      ...prev,
+      [keyName]: targetData,
+    }));
+  };
+  const addKeyTimeCount = (keyName: string): void => {
+    const targetData = keyData[keyName];
+    const cnt = (targetData.timeSecCount ?? 0) + (timeTyping - lastAnsTime) / 1000;
+    targetData.timeSecCount = cnt;
+    setKeyData((prev) => ({
+      ...prev,
+      [keyName]: targetData,
+    }));
+  };
+  const handleNextFinger = (Index: number) => {
+    const targetData = typingText.charAt(Index) !== "\n" ? keyData[typingText.charAt(Index)] : keyData.Enter;
+    if (targetData.keyType === "shift") {
+      if (targetData.hand === "left") {
+        setNextFinger({
+          leftHand: targetData.finger,
+          rightHand: keyData["r-Shift"].finger,
+        });
+      } else {
+        setNextFinger({
+          leftHand: keyData["l-Shift"].finger,
+          rightHand: targetData.finger,
+        });
+      }
+    } else if (targetData.keyType === "option") {
+      // 現状はmac-jisの\でしかoption Keyは使わない。
+      setNextFinger({
+        leftHand: keyData.option.finger,
+        rightHand: targetData.finger,
+      });
+      // 以下default Keyの条件分岐
+    } else if (targetData.hand === "left") {
+      setNextFinger({
+        leftHand: targetData.finger,
+        rightHand: null,
+      });
+    } else {
+      setNextFinger({
+        leftHand: null,
+        rightHand: targetData.finger,
+      });
+    }
+  };
+  const handleGameHistory = (speed: number, accuracy: number) => {
+    const pastData = pastGameData;
+    if (pastData.bestScores[language].speed < speed && pastData.bestScores[language].accuracy < accuracy) {
+      pastData.bestScores[language].speed = speed;
+      pastData.bestScores[language].accuracy = accuracy;
+    }
+    const date = new Date();
+    const todayStr = `${date.getFullYear()}/${date.getMonth()}/${date.getDate()}`;
+    // 既に同じ日にゲーム記録がある場合とない場合
+    if (pastData.history[todayStr]) pastData.history[todayStr].push({ speed, accuracy });
+    else pastData.history[todayStr] = [{ speed, accuracy }];
+    updateHistory(pastData);
+  };
+  const calSpeedKPM = (textLength: number, totalTimeMilliSec: number) =>
+    Math.floor(60 * (textLength / (totalTimeMilliSec / 1000)));
+  const calAccuracy = (textLength: number, missCnt: number) => Math.floor((100 * textLength) / (textLength + missCnt));
 
   const timer = useRef<NodeJS.Timer | null>(null);
 
@@ -81,10 +217,15 @@ const GamePage = () => {
       }, 10);
     }
 
+    addKeyPushCount(e.key);
+
     // 改行の処理
     if (typingText[currentIndex] === "\n") {
       if (e.key === "Enter") {
         setIsMissType(false);
+
+        addKeyTimeCount(e.key);
+        setLastAnsTime(timeTyping);
 
         // while ループで改行後に続くタブを i を使ってスキップする
         let i = 1;
@@ -99,22 +240,35 @@ const GamePage = () => {
           setSuccessModalOpen(true);
         } else {
           setCurrentIndex(currentIndex + i);
+          handleNextFinger(currentIndex + i);
         }
       } else {
         setIsMissType(true);
         setMissCount(missCount + 1);
+        addKeyMissCount("Enter");
       }
     } else if (e.key === typingText[currentIndex]) {
       setIsMissType(false);
       setCurrentIndex(currentIndex + 1);
+
+      addKeyTimeCount(e.key);
+      setLastAnsTime(timeTyping);
+
       if (currentIndex + 1 >= typingText.length) {
         clearInterval(timer.current as NodeJS.Timeout);
         setFinished(true);
         setSuccessModalOpen(true);
-      }
+        commitResult({
+          speed: calSpeedKPM(typingText.length, timeTyping),
+          accuracy: calAccuracy(typingText.length, missCount),
+          keyData,
+        });
+        handleGameHistory(calSpeedKPM(typingText.length, timeTyping), calAccuracy(typingText.length, missCount));
+      } else handleNextFinger(currentIndex + 1);
     } else {
       setIsMissType(true);
       setMissCount(missCount + 1);
+      addKeyMissCount(typingText[currentIndex]);
     }
   };
 
@@ -128,7 +282,14 @@ const GamePage = () => {
     setMissCount(0);
     setFinished(false);
     setStarted(false);
+    setKeyData(gameData.keyData);
+    setLastAnsTime(0);
+    handleNextFinger(0);
   };
+
+  // Enterを押すべき時に何も表示されないと分かりづらいので追加
+  let currText = typingText[currentIndex];
+  if (currText === "\n") currText = "↩︎\n";
 
   return (
     <StyledEngineProvider injectFirst>
@@ -143,9 +304,9 @@ const GamePage = () => {
 
               {/* for incorrect letters */}
               {isMissType ? (
-                <Typography className={classes.redFont}>{typingText[currentIndex]}</Typography>
+                <Typography className={classes.redFont}>{currText}</Typography>
               ) : (
-                <Typography className={classes.blackFont}>{typingText[currentIndex]}</Typography>
+                <Typography className={classes.blackFont}>{currText}</Typography>
               )}
 
               {/* for remaining letters */}
@@ -156,7 +317,7 @@ const GamePage = () => {
           </CardContent>
         </Card>
 
-        <KeyboardHand />
+        <KeyboardHand leftFin={nextFinger.leftHand} rightFin={nextFinger.rightHand} />
       </div>
 
       <SuccessModal
