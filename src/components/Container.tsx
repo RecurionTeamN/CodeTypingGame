@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "@mui/styles";
-import { StyledEngineProvider } from "@mui/material/styles";
-import { ToastContainer } from "react-toastify";
+// import { StyledEngineProvider } from "@mui/material/styles";
+// import { ToastContainer } from "react-toastify";
 import theme from "../styles/Theme";
 import GamePage from "../pages/GamePage/GamePage";
 import HomePage, { UserSetting } from "../pages/HomePage/HomePage";
