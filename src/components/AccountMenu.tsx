@@ -81,7 +81,7 @@ const AccountMenu = () => {
           <Avatar /> {authState.user?.displayName}
         </MenuItem>
         <Divider />
-        <MenuItem>
+        <MenuItem component={Link} to="/settings">
           <ListItemIcon>
             <MdSettings />
           </ListItemIcon>

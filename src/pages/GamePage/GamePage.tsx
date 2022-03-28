@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, createRef } from "react";
 import { StyledEngineProvider } from "@mui/material/styles";
 import { makeStyles } from "@mui/styles";
 import { Typography, Card, CardContent, Theme } from "@mui/material";
@@ -7,7 +7,7 @@ import SuccessModal from "./SuccessModal";
 import Header from "../../components/Header";
 import KeyboardHand from "./KeyboardHand";
 import { KeyData } from "../../data/keyboardData";
-import { Language } from "../HomePage/CodeContentData";
+import useProfileContext from "../../hooks/useProfileContext";
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
@@ -50,55 +50,26 @@ const useStyles = makeStyles((theme: Theme) => ({
     width: "60%",
     height: "400px",
   },
+  cardContent: {
+    height: "300px",
+    overflow: "auto",
+    "&::-webkit-scrollbar": {
+      display: "none",
+    },
+  },
 }));
 
 type Props = {
-  codeContent: string;
-  language: Language;
-  gameData: {
+  currGameData: {
     speed: number;
     accuracy: number;
     keyData: KeyData;
   };
-  pastGameData: {
-    history: {
-      [date: string]: [
-        {
-          speed: number;
-          accuracy: number;
-        }
-      ];
-    };
-    bestScores: {
-      [codeLang in Language]: {
-        speed: number;
-        accuracy: number;
-      };
-    };
-  };
-  commitResult: React.Dispatch<
+  setCurrGameData: React.Dispatch<
     React.SetStateAction<{
       speed: number;
       accuracy: number;
       keyData: KeyData;
-    }>
-  >;
-  updateHistory: React.Dispatch<
-    React.SetStateAction<{
-      history: {
-        [date: string]: [
-          {
-            speed: number;
-            accuracy: number;
-          }
-        ];
-      };
-      bestScores: {
-        [codeLang in Language]: {
-          speed: number;
-          accuracy: number;
-        };
-      };
     }>
   >;
 };
@@ -108,12 +79,13 @@ type NextFinger = {
   rightHand: "thumb" | "first" | "second" | "third" | "fourth" | null;
 };
 
-const GamePage: React.FC<Props> = ({ codeContent, language, gameData, pastGameData, commitResult, updateHistory }) => {
+const GamePage: React.FC<Props> = ({ currGameData, setCurrGameData }) => {
   const classes = useStyles();
+  const { profileState } = useProfileContext();
+  const { userSettings } = profileState;
 
-  const typingText = codeContent;
+  const typingText = userSettings.codeContent;
 
-  // const [typingText, setTypingText] = useState("");
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isMissType, setIsMissType] = useState(false);
   const [missCount, setMissCount] = useState(0);
@@ -122,10 +94,14 @@ const GamePage: React.FC<Props> = ({ codeContent, language, gameData, pastGameDa
   const [timeTyping, setTimeTyping] = useState(0);
   const [successModalOpen, setSuccessModalOpen] = useState(false);
 
-  const [keyData, setKeyData] = useState(gameData.keyData);
+  const [keyData, setKeyData] = useState(currGameData.keyData);
   const [lastAnsTime, setLastAnsTime] = useState(0);
   const [nextFinger, setNextFinger] = useState<NextFinger>({ leftHand: null, rightHand: null });
 
+  const scrollBox = createRef<HTMLDivElement>();
+  const scroll = () => {
+    scrollBox.current?.scrollBy({ top: 25, behavior: "smooth" });
+  };
   const addKeyPushCount = (keyName: string): void => {
     const targetData = keyData[keyName];
     const cnt = (targetData.pushCount ?? 0) + 1;
@@ -186,19 +162,21 @@ const GamePage: React.FC<Props> = ({ codeContent, language, gameData, pastGameDa
       });
     }
   };
-  const handleGameHistory = (speed: number, accuracy: number) => {
-    const pastData = pastGameData;
-    if (pastData.bestScores[language].speed < speed && pastData.bestScores[language].accuracy < accuracy) {
-      pastData.bestScores[language].speed = speed;
-      pastData.bestScores[language].accuracy = accuracy;
-    }
-    const date = new Date();
-    const todayStr = `${date.getFullYear()}/${date.getMonth()}/${date.getDate()}`;
-    // 既に同じ日にゲーム記録がある場合とない場合
-    if (pastData.history[todayStr]) pastData.history[todayStr].push({ speed, accuracy });
-    else pastData.history[todayStr] = [{ speed, accuracy }];
-    updateHistory(pastData);
-  };
+
+  // const handleGameHistory = (speed: number, accuracy: number) => {
+  //   const pastData = pastGameData;
+  //   if (pastData.bestScores[language].speed < speed && pastData.bestScores[language].accuracy < accuracy) {
+  //     pastData.bestScores[language].speed = speed;
+  //     pastData.bestScores[language].accuracy = accuracy;
+  //   }
+  //   const date = new Date();
+  //   const todayStr = `${date.getFullYear()}/${date.getMonth()}/${date.getDate()}`;
+  //   // 既に同じ日にゲーム記録がある場合とない場合
+  //   if (pastData.history[todayStr]) pastData.history[todayStr].push({ speed, accuracy });
+  //   else pastData.history[todayStr] = [{ speed, accuracy }];
+  //   updateHistory(pastData);
+  // };
+
   const calSpeedKPM = (textLength: number, totalTimeMilliSec: number) =>
     Math.floor(60 * (textLength / (totalTimeMilliSec / 1000)));
   const calAccuracy = (textLength: number, missCnt: number) => Math.floor((100 * textLength) / (textLength + missCnt));
@@ -211,6 +189,8 @@ const GamePage: React.FC<Props> = ({ codeContent, language, gameData, pastGameDa
     if (finished) return;
     if (!started) {
       setStarted(true);
+      scrollBox.current?.scrollTo({ top: 0, behavior: "smooth" });
+
       const startTime = new Date().getTime();
       timer.current = setInterval(() => {
         setTimeTyping(new Date().getTime() - startTime);
@@ -233,6 +213,7 @@ const GamePage: React.FC<Props> = ({ codeContent, language, gameData, pastGameDa
           if (typingText[currentIndex + i] === "\t" || typingText[currentIndex + i] === " ") i += 1;
           else break;
         }
+        scroll();
 
         if (currentIndex + i >= typingText.length) {
           clearInterval(timer.current as NodeJS.Timer);
@@ -258,12 +239,11 @@ const GamePage: React.FC<Props> = ({ codeContent, language, gameData, pastGameDa
         clearInterval(timer.current as NodeJS.Timeout);
         setFinished(true);
         setSuccessModalOpen(true);
-        commitResult({
+        setCurrGameData({
           speed: calSpeedKPM(typingText.length, timeTyping),
           accuracy: calAccuracy(typingText.length, missCount),
           keyData,
         });
-        handleGameHistory(calSpeedKPM(typingText.length, timeTyping), calAccuracy(typingText.length, missCount));
       } else handleNextFinger(currentIndex + 1);
     } else {
       setIsMissType(true);
@@ -275,14 +255,14 @@ const GamePage: React.FC<Props> = ({ codeContent, language, gameData, pastGameDa
   // ゲームの初期化
   const reset = () => {
     clearInterval(timer.current as NodeJS.Timeout);
+    scrollBox.current?.scrollTo({ top: 0, behavior: "smooth" });
     setTimeTyping(0);
-
     setCurrentIndex(0);
     setIsMissType(false);
     setMissCount(0);
     setFinished(false);
     setStarted(false);
-    setKeyData(gameData.keyData);
+    setKeyData(currGameData.keyData);
     setLastAnsTime(0);
     handleNextFinger(0);
   };
@@ -296,8 +276,13 @@ const GamePage: React.FC<Props> = ({ codeContent, language, gameData, pastGameDa
       <Header />
       <div className={classes.container}>
         <Card className={classes.card}>
-          <GameHeader timeTyping={timeTyping} missCount={missCount} reset={reset} />
-          <CardContent>
+          <GameHeader
+            codeLanguage={userSettings.codeLang}
+            timeTyping={timeTyping}
+            missCount={missCount}
+            reset={reset}
+          />
+          <CardContent className={classes.cardContent} ref={scrollBox}>
             <div onKeyPress={(e) => handleKeyPress(e)} tabIndex={-1} className={classes.textBox} aria-hidden="true">
               {/* for correct letters */}
               <Typography className={classes.greenFont}>{typingText.slice(0, currentIndex)}</Typography>

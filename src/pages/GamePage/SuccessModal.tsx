@@ -43,8 +43,10 @@ const useStyles = makeStyles((theme) => ({
 const SuccessModal: React.VFC<Props> = ({ result, successModalOpen, successModalClose }) => {
   const classes = useStyles();
   const cpm = ((result.textLength / result.timeTyping) * 1000 * 60).toFixed(0);
+
   const navigate = useNavigate();
   const goResultPage = () => navigate("/results");
+
   return (
     <div>
       <Modal

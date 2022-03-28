@@ -7,8 +7,17 @@ const DashboardPage = () => (
     <Header />
     <h1>DashboardPage</h1>
     <div>
-      <Link to="/game">GamePage</Link>
-      <Link to="/results">ResultPage</Link>
+      <ul>
+        <li>
+          <Link to="/game">GamePage</Link>
+        </li>
+        <li>
+          <Link to="/results">ResultPage</Link>
+        </li>
+        <li>
+          <Link to="/settings">SettingsPage</Link>
+        </li>
+      </ul>
     </div>
   </div>
 );
