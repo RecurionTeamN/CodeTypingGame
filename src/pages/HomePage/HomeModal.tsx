@@ -2,6 +2,7 @@ import React, { useState, useRef } from "react";
 import { Box, Button, Modal, SelectChangeEvent, Stack, TextField } from "@mui/material";
 import { Octokit } from "@octokit/rest";
 import { Base64 } from "js-base64";
+import { toast } from "react-toastify";
 import MySelect from "./MySelect";
 import PersonalCodeImport from "./PersonalCodeImport";
 
@@ -102,16 +103,13 @@ const HomeModal: React.VFC<Props> = ({
 
             setGitHubCode(Base64.decode(updatedContentStr));
 
-            // eslint-disable-next-line no-alert
-            alert("Code successfully obtained.");
+            toast.success("Code successfully obtained.");
           } else {
-            // eslint-disable-next-line no-alert
-            alert("format error");
+            toast.error("format error");
           }
         })
-        .catch((response) => {
-          // eslint-disable-next-line no-alert
-          alert(response);
+        .catch((err) => {
+          toast.error((err as Error).message);
         });
     };
 
@@ -161,8 +159,7 @@ const HomeModal: React.VFC<Props> = ({
                   code = githubCode;
                   if (typeof maxLenRef.current === "string") code = code.substring(0, parseInt(maxLenRef.current, 10));
                 } else {
-                  // eslint-disable-next-line no-alert
-                  alert("Language and code fields must be filled.");
+                  toast.error("Language and code fields must be filled.");
                   return;
                 }
                 setPersonalSetting({ language: personalLanguage, code });
