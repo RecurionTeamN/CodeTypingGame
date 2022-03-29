@@ -10,7 +10,7 @@ import "react-toastify/dist/ReactToastify.min.css";
 
 // pages
 import GamePage from "../pages/GamePage/GamePage";
-import HomePage from "../pages/HomePage/HomePage";
+import SettingPage from "../pages/SettingPage/SettingPage";
 import ResultPage from "../pages/ResultPage/ResultPage";
 import LandingPage from "../pages/LandingPage/LandingPage";
 import DashboardPage from "../pages/DashboardPage/DashboardPage";
@@ -22,7 +22,6 @@ import useProfileContext from "../hooks/useProfileContext";
 const Container = () => {
   const { authState } = useAuthContext();
   const { profileState } = useProfileContext();
-
   const [currGameData, setCurrGameData] = useState({
     speed: 0,
     accuracy: 0,
@@ -49,7 +48,7 @@ const Container = () => {
                 path="/results"
                 element={authState.user ? <ResultPage currGameData={currGameData} /> : <Navigate to="/" />}
               />
-              <Route path="/settings" element={authState.user ? <HomePage /> : <Navigate to="/" />} />
+              <Route path="/settings" element={authState.user ? <SettingPage /> : <Navigate to="/" />} />
               <Route path="/dashboard" element={authState.user ? <DashboardPage /> : <Navigate to="/" />} />
               <Route path="/" element={!authState.user ? <LandingPage /> : <Navigate to="/dashboard" />} />
               {/* <Route path="*" element={<404Page />} /> */}

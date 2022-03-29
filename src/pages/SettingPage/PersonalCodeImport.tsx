@@ -2,21 +2,21 @@ import React from "react";
 import { Button, Checkbox, Grid, TextField } from "@mui/material";
 
 type Props = {
-  personalCodeRef: React.MutableRefObject<string>;
+  additionalCodeRef: React.MutableRefObject<string>;
   githubContentRef: React.MutableRefObject<string>;
   isCodePasteMode: boolean;
   handleCheckeBoxSwitch: () => void;
-  handlePersonalCodeChange: (event: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  handleAdditionalCodeChange: (event: React.ChangeEvent<HTMLTextAreaElement>) => void;
   handleGithubContentRefChange: (event: React.ChangeEvent<HTMLTextAreaElement>) => void;
   handleGithubURLChange: (baseUrl: string) => void;
 };
 
 const PersonalCodeImport: React.VFC<Props> = ({
-  personalCodeRef,
+  additionalCodeRef,
   githubContentRef,
   isCodePasteMode,
   handleCheckeBoxSwitch,
-  handlePersonalCodeChange,
+  handleAdditionalCodeChange,
   handleGithubContentRefChange,
   handleGithubURLChange,
 }) => (
@@ -30,14 +30,14 @@ const PersonalCodeImport: React.VFC<Props> = ({
           id="paste-code-input"
           disabled={!isCodePasteMode}
           required={isCodePasteMode}
-          inputRef={personalCodeRef}
+          inputRef={additionalCodeRef}
           label="Paste code here"
           fullWidth
           margin="normal"
-          rows={7}
+          rows={4}
           multiline
           variant="outlined"
-          onChange={handlePersonalCodeChange}
+          onChange={handleAdditionalCodeChange}
         />
       </Grid>
     </Grid>
