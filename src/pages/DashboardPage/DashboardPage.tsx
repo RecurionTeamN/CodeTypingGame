@@ -4,6 +4,7 @@ import Header from "../../components/Header";
 import useGameHistoryCollection from "../../hooks/useGameHistoryCollection";
 import useAuthContext from "../../hooks/useAuthContext";
 import useProfileContext from "../../hooks/useProfileContext";
+import CalendarHeatmap from "./CalendarHeatmap";
 
 const DashboardPage = () => {
   const { documents: gameHistoryDocuments, isPending } = useGameHistoryCollection();
@@ -32,21 +33,33 @@ const DashboardPage = () => {
         {isPending ? (
           <div>loading...</div>
         ) : (
-          <ul>
-            {gameHistoryDocuments && gameHistoryDocuments.length ? (
-              gameHistoryDocuments.map((game) => (
-                <li key={game.id}>
-                  <p>language: {game.codeLang}</p>
-                  <p>accuracy: {game.accuracy}</p>
-                  <p>speed: {game.speed}</p>
-                  <p>uid: {game.uid}</p>
-                  <p>createdAt: {game.createdAt.toDate().toDateString()}</p>
-                </li>
-              ))
-            ) : (
-              <p>This user has no game history</p>
+          <>
+            <ul>
+              {gameHistoryDocuments && gameHistoryDocuments.length ? (
+                gameHistoryDocuments.map((game) => (
+                  <li key={game.id}>
+                    <p>language: {game.codeLang}</p>
+                    <p>accuracy: {game.accuracy}</p>
+                    <p>speed: {game.speed}</p>
+                    <p>uid: {game.uid}</p>
+                    <p>createdAt: {game.createdAt.toDate().toDateString()}</p>
+                  </li>
+                ))
+              ) : (
+                <p>This user has no game history</p>
+              )}
+            </ul>
+
+            {/* カレンダーヒートマップ */}
+            {gameHistoryDocuments && (
+              <CalendarHeatmap
+                gameHistoryDocuments={gameHistoryDocuments}
+                year={new Date().getFullYear()}
+                month={new Date().getMonth()}
+                width={300}
+              />
             )}
-          </ul>
+          </>
         )}
       </div>
       <div>
