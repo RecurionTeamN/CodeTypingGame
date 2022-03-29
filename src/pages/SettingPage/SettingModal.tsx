@@ -5,15 +5,16 @@ import { Base64 } from "js-base64";
 import { toast } from "react-toastify";
 import MySelect from "./MySelect";
 import PersonalCodeImport from "./PersonalCodeImport";
+import theme from "../../styles/Theme";
 
 type Props = {
   isModalOpen: boolean;
-  isShowingPersonalSetting: boolean;
+  isShowingAdditionalSetting: boolean;
   languages: string[];
   toggleModal: () => void;
   toggleSetting: () => void;
   resetDefaultSetting: () => void;
-  setPersonalSetting: (
+  setAdditionalSetting: (
     value: React.SetStateAction<{
       language: string;
       code: string;
@@ -34,21 +35,21 @@ const style = {
   p: 4,
 };
 
-const HomeModal: React.VFC<Props> = ({
+const SettingModal: React.VFC<Props> = ({
   isModalOpen,
-  isShowingPersonalSetting,
+  isShowingAdditionalSetting,
   languages,
   toggleModal,
   toggleSetting,
   resetDefaultSetting,
-  setPersonalSetting,
+  setAdditionalSetting,
 }) => {
   // コードペーストモードがオンの時 true
-  const [personalLanguage, setPesonalLanguage] = useState("");
+  const [additionalLanguage, setAdditionalLanguage] = useState("");
   const [isCodePasteMode, setIsCodePasteMode] = useState(true);
   const [githubCode, setGitHubCode] = useState("");
   const maxLenRef = useRef("");
-  const personalCodeRef = useRef("");
+  const additionalCodeRef = useRef("");
   const githubContentRef = useRef("");
 
   const handleCheckeBoxSwitch = (): void => {
@@ -59,12 +60,12 @@ const HomeModal: React.VFC<Props> = ({
     maxLenRef.current = event.target.value;
   };
 
-  const handlePersonalLanguageChange = (event: SelectChangeEvent<string>): void => {
-    setPesonalLanguage(event.target.value);
+  const handleAdditionalLanguageChange = (event: SelectChangeEvent<string>): void => {
+    setAdditionalLanguage(event.target.value);
   };
 
-  const handlePersonalCodeChange = (event: React.ChangeEvent<HTMLTextAreaElement>): void => {
-    personalCodeRef.current = event.target.value;
+  const handleAdditionalCodeChange = (event: React.ChangeEvent<HTMLTextAreaElement>): void => {
+    additionalCodeRef.current = event.target.value;
   };
 
   const handleGithubContentRefChange = (event: React.ChangeEvent<HTMLTextAreaElement>): void => {
@@ -125,10 +126,17 @@ const HomeModal: React.VFC<Props> = ({
     >
       <div>
         <Box sx={style} alignItems="center" justifyContent="center">
-          <p>Personal Setting</p>
+          <Box>
+            <strong>追加設定：コードをペースト又はGitHubからimportして使用できます。</strong>
+          </Box>
           <Stack spacing={3} paddingTop={1}>
-            <MySelect label="Language" options={languages} onchange={handlePersonalLanguageChange} />
-
+            <Box sx={{ color: theme.palette.error.main }}>
+              ※必須項目：設定されるコードのプログラミング言語を選択下さい。
+            </Box>
+            <MySelect label="Language" options={languages} onchange={handleAdditionalLanguageChange} />
+            <Box sx={{ color: theme.palette.success.main }}>
+              任意項目：使用するコードの長さを制限することができます。
+            </Box>
             <TextField
               inputRef={maxLenRef}
               type="number"
@@ -138,11 +146,11 @@ const HomeModal: React.VFC<Props> = ({
             />
 
             <PersonalCodeImport
-              personalCodeRef={personalCodeRef}
+              additionalCodeRef={additionalCodeRef}
               githubContentRef={githubContentRef}
               isCodePasteMode={isCodePasteMode}
               handleCheckeBoxSwitch={handleCheckeBoxSwitch}
-              handlePersonalCodeChange={handlePersonalCodeChange}
+              handleAdditionalCodeChange={handleAdditionalCodeChange}
               handleGithubContentRefChange={handleGithubContentRefChange}
               handleGithubURLChange={handleGithubURLChange}
             />
@@ -151,24 +159,24 @@ const HomeModal: React.VFC<Props> = ({
               onClick={() => {
                 let code = "";
                 // ペーストによるコード入力の場合
-                if (isCodePasteMode && personalLanguage !== "" && typeof personalCodeRef.current === "string") {
-                  code = personalCodeRef.current;
+                if (isCodePasteMode && additionalLanguage !== "" && typeof additionalCodeRef.current === "string") {
+                  code = additionalCodeRef.current;
                   if (typeof maxLenRef.current === "string") code = code.substring(0, parseInt(maxLenRef.current, 10));
                 } // github api によるコード取得の場合
-                else if (!isCodePasteMode && personalLanguage !== "" && githubCode !== "") {
+                else if (!isCodePasteMode && additionalLanguage !== "" && githubCode !== "") {
                   code = githubCode;
                   if (typeof maxLenRef.current === "string") code = code.substring(0, parseInt(maxLenRef.current, 10));
                 } else {
-                  toast.error("Language and code fields must be filled.");
+                  toast.error("必須項目を選択の上、コードをペースト又は有効なGitHub URLを記入下さい。");
                   return;
                 }
-                setPersonalSetting({ language: personalLanguage, code });
+                setAdditionalSetting({ language: additionalLanguage, code });
                 resetDefaultSetting();
-                if (!isShowingPersonalSetting) toggleSetting();
+                if (!isShowingAdditionalSetting) toggleSetting();
                 toggleModal();
               }}
             >
-              Confirm
+              設定を保存
             </Button>
           </Stack>
         </Box>
@@ -177,4 +185,4 @@ const HomeModal: React.VFC<Props> = ({
   );
 };
 
-export default HomeModal;
+export default SettingModal;
