@@ -5,12 +5,12 @@ import { GameHistoryDocument } from "../../firebase/GameHistory/types";
 
 type CalendarHeatmapProps = {
   gameHistoryDocuments: GameHistoryDocument[];
-  year: number;
-  month: number;
+  currentYear: number;
+  currentMonth: number;
   width: number;
 };
 
-type Dataset = {
+type Dailydata = {
   month: number;
   dayofweek: number;
   weekOfMonth: number;
@@ -39,56 +39,68 @@ const useStyles = makeStyles(() => ({
 }));
 
 // 該当年月の日別プレイ情報を設定する関数
-const getCalendar = (gameHistoryDocuments: GameHistoryDocument[], year: number, month: number): Dataset[] => {
-  const calendar: Dataset[] = [];
+const generateDailyHistory = (
+  gameHistoryDocuments: GameHistoryDocument[],
+  currentYear: number,
+  currentMonth: number
+): Dailydata[] => {
+  const dailyHistory: Dailydata[] = [];
 
   // 日付を該当年月の月初に設定
   const date = new Date();
-  date.setFullYear(year, month, 1);
+  date.setFullYear(currentYear, currentMonth, 1);
 
+  const month = date.getMonth();
   let weekOfMonth = 1;
+  // 1(Sun.) ~ 7(Sat.)
   let dayofweek = date.getDay() + 1;
 
   let times = gameHistoryDocuments.filter(
     (item) =>
-      item.createdAt.toDate().getFullYear() === year &&
+      item.createdAt.toDate().getFullYear() === currentYear &&
       item.createdAt.toDate().getMonth() === month &&
       item.createdAt.toDate().getDate() === date.getDate()
   ).length;
 
-  calendar[calendar.length] = { month, dayofweek, weekOfMonth, day: date.getDate(), times };
+  dailyHistory[dailyHistory.length] = { month, dayofweek, weekOfMonth, day: date.getDate(), times };
   date.setDate(date.getDate() + 1);
 
   // 翌月の1日まで繰り返す
-  let j = calendar.length;
+  let j = dailyHistory.length;
   while (date.getDate() !== 1) {
     dayofweek = date.getDay() + 1;
 
     times = gameHistoryDocuments.filter(
       (item) =>
-        item.createdAt.toDate().getFullYear() === year &&
+        item.createdAt.toDate().getFullYear() === currentYear &&
         item.createdAt.toDate().getMonth() === month &&
         item.createdAt.toDate().getDate() === date.getDate()
     ).length;
 
-    calendar[j] = { month, dayofweek, weekOfMonth, day: date.getDate(), times };
+    dailyHistory[j] = { month, dayofweek, weekOfMonth, day: date.getDate(), times };
     j += 1;
     date.setDate(date.getDate() + 1);
     // 日曜日を該当月の週が切り替わるタイミングとして扱う
-    if (date.getDay() + 1 === 1) weekOfMonth += 1;
+    if (date.getDay() + 1 === 1) weekOfMonth = (weekOfMonth % 6) + 1;
   }
-  return calendar;
+
+  return dailyHistory;
 };
 
 // カレンダーヒートマップコンポーネント
-const CalendarHeatmap: React.VFC<CalendarHeatmapProps> = ({ gameHistoryDocuments, year, month, width }) => {
+const CalendarHeatmap: React.VFC<CalendarHeatmapProps> = ({
+  gameHistoryDocuments,
+  currentYear,
+  currentMonth,
+  width,
+}) => {
   const chartParent = useRef<HTMLDivElement>(null);
   const chart = useRef<SVGSVGElement>(null);
   const classes = useStyles();
 
-  const dataset: Dataset[] = getCalendar(gameHistoryDocuments, year, month);
+  const dailyData: Dailydata[] = generateDailyHistory(gameHistoryDocuments, currentYear, currentMonth);
   const monthEng = [
-    "Janyart",
+    "January",
     "February",
     "March",
     "April",
@@ -102,20 +114,20 @@ const CalendarHeatmap: React.VFC<CalendarHeatmapProps> = ({ gameHistoryDocuments
     "December",
   ];
 
-  const margin = { top: 40, right: 40, bottom: 40, left: 40 };
+  const margin = { top: 30, right: 15, bottom: 30, left: 15 };
   const w = width - margin.left - margin.right;
   const rectSize = Math.floor(w / 7); // 1マスの幅は横幅/7(日)
-  const h = rectSize * 6; // 第1週〜6週分 + margin の高さに設定
+  const h = rectSize * 6; // 第1週〜6週分の高さに設定
 
   // カレンダーの色は、遊んだ回数によって10段階に分ける
   const colorScale = d3.scaleSequential().domain([0, 10]).interpolator(d3.interpolate("#CCFFFF", "#0099FF"));
-  // Sun(1)->Sat(7)
+  // Sun.(1)->Sat.(7)
   const xScale = d3.scaleBand().domain(["1", "2", "3", "4", "5", "6", "7"]).range([0, w]).padding(0.1);
   // first week(1)-> sixth week(6)
   const yScale = d3.scaleBand().domain(["1", "2", "3", "4", "5", "6"]).range([0, h]).padding(0.1);
 
   const darkenSquare = (event: Event) => {
-    d3.select(event.currentTarget as d3.BaseType).style("opacity", 0.4);
+    d3.select(event.currentTarget as d3.BaseType).style("opacity", 0.6);
     d3.select(event.currentTarget as d3.BaseType).style("stroke-width", 2);
   };
 
@@ -124,28 +136,28 @@ const CalendarHeatmap: React.VFC<CalendarHeatmapProps> = ({ gameHistoryDocuments
     d3.select(event.currentTarget as d3.BaseType).style("stroke-width", 0.5);
   };
 
-  const showInfo = (event: Event, d: Dataset) => {
+  const showInfo = (event: Event, d: Dailydata) => {
     const mousePointer = d3.pointer(event);
 
     const info = `${d.times} amount of efforts <br/> on ${d.day} ${monthEng[d.month]}`;
 
-    const tooltip = d3.selectAll("#tooltip").html(info).style("visibility", "visible");
+    const tooltip = d3.selectAll(`#tooltip${currentMonth}`).html(info).style("visibility", "visible");
 
     if (mousePointer[0] < w / 2) {
       tooltip.style("left", `${mousePointer[0] + margin.left}px`);
     } else {
-      tooltip.style("left", `${mousePointer[0] - margin.left - margin.right}px`);
+      tooltip.style("left", `${mousePointer[0] - 3 * margin.left - 3 * margin.right}px`);
     }
 
-    if (mousePointer[1] < h / 2) {
+    if (mousePointer[1] < h / 2 - margin.top) {
       tooltip.style("top", `${mousePointer[1] + margin.top + margin.bottom}px`);
     } else {
-      tooltip.style("top", `${mousePointer[1]}px`);
+      tooltip.style("top", `${mousePointer[1] - margin.top / 2}px`);
     }
   };
 
   const hideInfo = () => {
-    d3.selectAll("#tooltip").style("visibility", "hidden");
+    d3.selectAll(`#tooltip${currentMonth}`).style("visibility", "hidden");
   };
 
   useEffect(() => {
@@ -172,23 +184,25 @@ const CalendarHeatmap: React.VFC<CalendarHeatmapProps> = ({ gameHistoryDocuments
     const drawHeatmap = () => {
       svg
         .selectAll(".play-record")
-        .data(dataset)
+        .data(dailyData)
         .enter()
         .append("rect")
-        .attr("x", (d: Dataset) => xScale(d.dayofweek.toString()) as number)
-        .attr("y", (d: Dataset) => yScale(d.weekOfMonth.toString()) as number)
+        .attr("x", (d: Dailydata) => xScale(d.dayofweek.toString()) as number)
+        .attr("y", (d: Dailydata) => yScale(d.weekOfMonth.toString()) as number)
         .attr("width", xScale.bandwidth())
         .attr("height", yScale.bandwidth())
         .style("stroke", "black")
         .style("stroke-width", 0.5)
         .style("stroke-opacity", 1)
-        .style("fill", (d: Dataset) => {
+        .style("fill", (d: Dailydata) => {
           let colorDomain = d.times;
           if (colorDomain > 10) colorDomain = 10;
           return colorScale(colorDomain);
         })
-        .on("click", (event: Event, d: Dataset) => showInfo(event, d))
-        .on("mouseover", (event: Event) => darkenSquare(event))
+        .on("mouseover", (event: Event, d: Dailydata) => {
+          darkenSquare(event);
+          showInfo(event, d);
+        })
         .on("mouseleave", (event: Event) => {
           hideInfo();
           lightenSquare(event);
@@ -199,8 +213,8 @@ const CalendarHeatmap: React.VFC<CalendarHeatmapProps> = ({ gameHistoryDocuments
 
   return (
     <div style={{ position: "relative", width: w + margin.left + margin.right }} ref={chartParent}>
-      <h4 className={classes.heatmapLabel}>{monthEng[month]}</h4>
-      <div id="tooltip" className={classes.tooltip} />
+      <h4 className={classes.heatmapLabel}>{monthEng[currentMonth]}</h4>
+      <div id={`tooltip${currentMonth}`} className={classes.tooltip} />
       <svg ref={chart} />
     </div>
   );

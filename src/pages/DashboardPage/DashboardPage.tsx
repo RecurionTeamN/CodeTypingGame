@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { Box } from "@mui/material";
 import Header from "../../components/Header";
 import useGameHistoryCollection from "../../hooks/useGameHistoryCollection";
 import useAuthContext from "../../hooks/useAuthContext";
@@ -52,12 +53,16 @@ const DashboardPage = () => {
 
             {/* カレンダーヒートマップ */}
             {gameHistoryDocuments && (
-              <CalendarHeatmap
-                gameHistoryDocuments={gameHistoryDocuments}
-                year={new Date().getFullYear()}
-                month={new Date().getMonth()}
-                width={300}
-              />
+              <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
+                {[2, 1, 0].map((shift) => (
+                  <CalendarHeatmap
+                    gameHistoryDocuments={gameHistoryDocuments}
+                    currentYear={new Date().getFullYear() - shift}
+                    currentMonth={new Date().getMonth() - shift}
+                    width={250}
+                  />
+                ))}
+              </Box>
             )}
           </>
         )}
