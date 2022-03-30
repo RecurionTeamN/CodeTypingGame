@@ -2,12 +2,15 @@ import React, { useState, useRef, createRef } from "react";
 import { StyledEngineProvider } from "@mui/material/styles";
 import { makeStyles } from "@mui/styles";
 import { Typography, Card, CardContent, Theme } from "@mui/material";
+import { toast } from "react-toastify";
 import GameHeader from "./GameHeader";
 import SuccessModal from "./SuccessModal";
 import Header from "../../components/Header";
 import KeyboardHand from "./KeyboardHand";
 import { KeyData } from "../../data/keyboardData";
 import useProfileContext from "../../hooks/useProfileContext";
+import useAuthContext from "../../hooks/useAuthContext";
+import addGameHistoryDoc from "../../firebase/utils/addGameHistoryDoc";
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
@@ -82,6 +85,7 @@ type NextFinger = {
 const GamePage: React.FC<Props> = ({ currGameData, setCurrGameData }) => {
   const classes = useStyles();
   const { profileState } = useProfileContext();
+  const { authState } = useAuthContext();
   const { userSettings } = profileState;
 
   const typingText = userSettings.codeContent;
@@ -215,6 +219,25 @@ const GamePage: React.FC<Props> = ({ currGameData, setCurrGameData }) => {
 
   const timer = useRef<NodeJS.Timer | null>(null);
 
+  const gameFinished = () => {
+    clearInterval(timer.current as NodeJS.Timer);
+
+    const speed = calSpeedKPM(typingText.length, timeTyping);
+    const accuracy = calAccuracy(typingText.length, missCount);
+    setFinished(true);
+    setSuccessModalOpen(true);
+    setCurrGameData({
+      speed,
+      accuracy,
+      keyData,
+    });
+    if (authState.user) {
+      addGameHistoryDoc(authState.user?.uid, accuracy, userSettings.codeLang, speed).catch((err) =>
+        toast.error((err as Error).message)
+      );
+    }
+  };
+
   const handleKeyPress = (e: React.KeyboardEvent<HTMLDivElement>) => {
     e.preventDefault();
 
@@ -248,9 +271,7 @@ const GamePage: React.FC<Props> = ({ currGameData, setCurrGameData }) => {
         scroll();
 
         if (currentIndex + i >= typingText.length) {
-          clearInterval(timer.current as NodeJS.Timer);
-          setFinished(true);
-          setSuccessModalOpen(true);
+          gameFinished();
         } else {
           setCurrentIndex(currentIndex + i);
           handleNextFinger(currentIndex + i);
@@ -269,14 +290,7 @@ const GamePage: React.FC<Props> = ({ currGameData, setCurrGameData }) => {
       setLastAnsTime(timeTyping);
 
       if (currentIndex + 1 >= typingText.length) {
-        clearInterval(timer.current as NodeJS.Timeout);
-        setFinished(true);
-        setSuccessModalOpen(true);
-        setCurrGameData({
-          speed: calSpeedKPM(typingText.length, timeTyping),
-          accuracy: calAccuracy(typingText.length, missCount),
-          keyData,
-        });
+        gameFinished();
       } else {
         handleNextFinger(currentIndex + 1);
         handleNextKeys(currentIndex + 1);
