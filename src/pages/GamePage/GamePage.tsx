@@ -13,6 +13,10 @@ import useAuthContext from "../../hooks/useAuthContext";
 import addGameHistoryDoc from "../../firebase/utils/addGameHistoryDoc";
 
 const useStyles = makeStyles((theme: Theme) => ({
+  mainContainer: {
+    height: "100vh",
+    overflow: "hidden",
+  },
   container: {
     display: "flex",
     flexDirection: "column",
@@ -53,6 +57,11 @@ const useStyles = makeStyles((theme: Theme) => ({
     width: "60%",
     height: "45vh",
   },
+  keyboardContainer: {
+    width: "60%",
+    display: "flex",
+    justifyContent: "center",
+  },
   cardContent: {
     height: "300px",
     overflow: "auto",
@@ -88,7 +97,8 @@ const GamePage: React.FC<Props> = ({ currGameData, setCurrGameData }) => {
   const { authState } = useAuthContext();
   const { userSettings } = profileState;
 
-  const typingText = userSettings.codeContent;
+  // firebase で "\n" の文字を保存する場合 "\\n" に変換される為、"\n" に戻す
+  const typingText = userSettings.codeContent.replace(/\\n/g, "\n");
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isMissType, setIsMissType] = useState(false);
@@ -206,20 +216,6 @@ const GamePage: React.FC<Props> = ({ currGameData, setCurrGameData }) => {
     setNextKeys(nextKeyArr);
   };
 
-  // const handleGameHistory = (speed: number, accuracy: number) => {
-  //   const pastData = pastGameData;
-  //   if (pastData.bestScores[language].speed < speed && pastData.bestScores[language].accuracy < accuracy) {
-  //     pastData.bestScores[language].speed = speed;
-  //     pastData.bestScores[language].accuracy = accuracy;
-  //   }
-  //   const date = new Date();
-  //   const todayStr = `${date.getFullYear()}/${date.getMonth()}/${date.getDate()}`;
-  //   // 既に同じ日にゲーム記録がある場合とない場合
-  //   if (pastData.history[todayStr]) pastData.history[todayStr].push({ speed, accuracy });
-  //   else pastData.history[todayStr] = [{ speed, accuracy }];
-  //   updateHistory(pastData);
-  // };
-
   const calSpeedKPM = (textLength: number, totalTimeMilliSec: number) =>
     Math.floor(60 * (textLength / (totalTimeMilliSec / 1000)));
   const calAccuracy = (textLength: number, missCnt: number) => Math.floor((100 * textLength) / (textLength + missCnt));
@@ -331,41 +327,45 @@ const GamePage: React.FC<Props> = ({ currGameData, setCurrGameData }) => {
 
   return (
     <StyledEngineProvider injectFirst>
-      <Header />
-      <div className={classes.container}>
-        <Card className={classes.card}>
-          <GameHeader
-            codeLanguage={userSettings.codeLang}
-            timeTyping={timeTyping}
-            missCount={missCount}
-            reset={reset}
-          />
-          <CardContent className={classes.cardContent} ref={scrollBox}>
-            <div onKeyPress={(e) => handleKeyPress(e)} tabIndex={-1} className={classes.textBox} aria-hidden="true">
-              {/* for correct letters */}
-              <Typography className={classes.greenFont}>{typingText.slice(0, currentIndex)}</Typography>
+      <div className={classes.mainContainer}>
+        <Header />
+        <div className={classes.container}>
+          <Card className={classes.card}>
+            <GameHeader
+              codeLanguage={userSettings.codeLang}
+              timeTyping={timeTyping}
+              missCount={missCount}
+              reset={reset}
+            />
+            <CardContent className={classes.cardContent} ref={scrollBox}>
+              <div onKeyPress={(e) => handleKeyPress(e)} tabIndex={-1} className={classes.textBox} aria-hidden="true">
+                {/* for correct letters */}
+                <Typography className={classes.greenFont}>{typingText.slice(0, currentIndex)}</Typography>
 
-              {/* for incorrect letters */}
-              {isMissType ? (
-                <Typography className={classes.redFont}>{currText}</Typography>
-              ) : (
-                <Typography className={classes.blackFont}>{currText}</Typography>
-              )}
+                {/* for incorrect letters */}
+                {isMissType ? (
+                  <Typography className={classes.redFont}>{currText}</Typography>
+                ) : (
+                  <Typography className={classes.blackFont}>{currText}</Typography>
+                )}
 
-              {/* for remaining letters */}
-              <Typography className={classes.greyFont}>
-                {typingText.slice(currentIndex + 1, typingText.length)}
-              </Typography>
-            </div>
-          </CardContent>
-        </Card>
+                {/* for remaining letters */}
+                <Typography className={classes.greyFont}>
+                  {typingText.slice(currentIndex + 1, typingText.length)}
+                </Typography>
+              </div>
+            </CardContent>
+          </Card>
 
-        <KeyboardHand
-          keyboardType={userSettings.keyboardType}
-          nextKeys={nextKeys}
-          leftFin={nextFinger.leftHand}
-          rightFin={nextFinger.rightHand}
-        />
+          <div className={classes.keyboardContainer}>
+            <KeyboardHand
+              keyboardType={userSettings.keyboardType}
+              nextKeys={nextKeys}
+              leftFin={nextFinger.leftHand}
+              rightFin={nextFinger.rightHand}
+            />
+          </div>
+        </div>
       </div>
 
       <SuccessModal
