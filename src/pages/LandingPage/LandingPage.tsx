@@ -2,7 +2,6 @@ import React from "react";
 import { makeStyles } from "@mui/styles";
 import { Typography, Theme } from "@mui/material";
 import GoogleButton from "react-google-button";
-import Header from "../../components/Header";
 import useLogin from "../../hooks/useLogin";
 import landingPageSVG from "../../assets/images/landingpage.svg";
 import LandingTypingLetters from "./TypingLetters";
