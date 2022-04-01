@@ -19,6 +19,8 @@ export type KeyData = {
     pushCount?: number;
     missCount?: number;
     timeSecCount?: number;
+    speed?: number;
+    accuracy?: number;
   };
 };
 
