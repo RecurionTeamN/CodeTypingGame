@@ -4,6 +4,18 @@ export type KeyData = {
     position: number[];
     hand: "left" | "right";
     finger: "thumb" | "first" | "second" | "third" | "fourth";
+    size?:
+      | "S"
+      | "M"
+      | "L"
+      | "XL"
+      | "XXL"
+      | "XXXL"
+      | "us-space"
+      | "jis-space"
+      | "mac-jis-space"
+      | "mac-us-space"
+      | "hexaEnter";
     pushCount?: number;
     missCount?: number;
     timeSecCount?: number;
@@ -189,6 +201,7 @@ export const keyboardData: KeyboardData = {
       position: [1, 0],
       hand: "left",
       finger: "fourth",
+      size: "M",
     },
     q: {
       keyType: "default",
@@ -339,12 +352,14 @@ export const keyboardData: KeyboardData = {
       position: [1, 13],
       hand: "right",
       finger: "fourth",
+      size: "hexaEnter",
     },
     "caps lock": {
       keyType: "default",
       position: [2, 0],
       hand: "left",
       finger: "fourth",
+      size: "L",
     },
     a: {
       keyType: "default",
@@ -495,6 +510,7 @@ export const keyboardData: KeyboardData = {
       position: [3, 0],
       hand: "left",
       finger: "fourth",
+      size: "XXL",
     },
     z: {
       keyType: "default",
@@ -633,66 +649,77 @@ export const keyboardData: KeyboardData = {
       position: [3, 12],
       hand: "right",
       finger: "fourth",
+      size: "XXL",
     },
     "l-Control": {
       keyType: "default",
       position: [4, 0],
       hand: "left",
       finger: "fourth",
+      size: "L",
     },
     "l-win": {
       keyType: "default",
       position: [4, 1],
       hand: "left",
       finger: "fourth",
+      size: "M",
     },
     "l-Alt": {
       keyType: "default",
       position: [4, 2],
       hand: "left",
       finger: "fourth",
+      size: "M",
     },
     無変換: {
       keyType: "default",
       position: [4, 3],
       hand: "left",
       finger: "third",
+      size: "M",
     },
     " ": {
       keyType: "default",
       position: [4, 4],
       hand: "left",
       finger: "thumb",
+      size: "jis-space",
     },
     変換: {
       keyType: "default",
       position: [4, 5],
       hand: "right",
       finger: "first",
+      size: "M",
     },
     カタひら: {
       keyType: "default",
       position: [4, 6],
       hand: "right",
       finger: "second",
+      size: "M",
     },
     "r-Alt": {
       keyType: "default",
       position: [4, 7],
       hand: "right",
       finger: "third",
+      size: "M",
     },
     "r-win": {
       keyType: "default",
       position: [4, 8],
       hand: "right",
       finger: "fourth",
+      size: "M",
     },
     app: {
       keyType: "default",
       position: [4, 9],
       hand: "right",
       finger: "fourth",
+      size: "M",
     },
     "r-Control": {
       keyType: "default",
@@ -863,12 +890,14 @@ export const keyboardData: KeyboardData = {
       position: [0, 13],
       hand: "right",
       finger: "fourth",
+      size: "L",
     },
     Tab: {
       keyType: "default",
       position: [1, 0],
       hand: "left",
       finger: "fourth",
+      size: "L",
     },
     q: {
       keyType: "default",
@@ -1031,6 +1060,7 @@ export const keyboardData: KeyboardData = {
       position: [2, 0],
       hand: "left",
       finger: "fourth",
+      size: "XL",
     },
     a: {
       keyType: "default",
@@ -1169,12 +1199,14 @@ export const keyboardData: KeyboardData = {
       position: [2, 12],
       hand: "right",
       finger: "fourth",
+      size: "XL",
     },
     "l-Shift": {
       keyType: "default",
       position: [3, 0],
       hand: "left",
       finger: "fourth",
+      size: "XXXL",
     },
     z: {
       keyType: "default",
@@ -1301,54 +1333,63 @@ export const keyboardData: KeyboardData = {
       position: [3, 11],
       hand: "right",
       finger: "fourth",
+      size: "XXXL",
     },
     "l-Control": {
       keyType: "default",
       position: [4, 0],
       hand: "left",
       finger: "fourth",
+      size: "M",
     },
     "l-win": {
       keyType: "default",
       position: [4, 1],
       hand: "left",
       finger: "fourth",
+      size: "M",
     },
     "l-Alt": {
       keyType: "default",
       position: [4, 2],
       hand: "left",
       finger: "fourth",
+      size: "M",
     },
     " ": {
       keyType: "default",
       position: [4, 3],
       hand: "left",
       finger: "thumb",
+      size: "us-space",
     },
     "r-Alt": {
       keyType: "default",
       position: [4, 4],
       hand: "right",
       finger: "third",
+      size: "M",
     },
     "r-win": {
       keyType: "default",
       position: [4, 5],
       hand: "right",
       finger: "fourth",
+      size: "M",
     },
     app: {
       keyType: "default",
       position: [4, 6],
       hand: "right",
       finger: "fourth",
+      size: "M",
     },
     "r-Control": {
       keyType: "default",
       position: [4, 7],
       hand: "right",
       finger: "fourth",
+      size: "M",
     },
   },
   "mac-jis": {
@@ -1357,6 +1398,7 @@ export const keyboardData: KeyboardData = {
       position: [0, 0],
       hand: "left",
       finger: "fourth",
+      size: "L",
     },
     "!": {
       keyType: "shift",
@@ -1669,12 +1711,14 @@ export const keyboardData: KeyboardData = {
       position: [1, 13],
       hand: "right",
       finger: "fourth",
+      size: "hexaEnter",
     },
     Control: {
       keyType: "default",
       position: [2, 0],
       hand: "left",
       finger: "fourth",
+      size: "M",
     },
     a: {
       keyType: "default",
@@ -1825,6 +1869,7 @@ export const keyboardData: KeyboardData = {
       position: [3, 0],
       hand: "left",
       finger: "fourth",
+      size: "XL",
     },
     z: {
       keyType: "default",
@@ -1957,6 +2002,7 @@ export const keyboardData: KeyboardData = {
       position: [3, 12],
       hand: "right",
       finger: "fourth",
+      size: "XL",
     },
     "caps lock": {
       keyType: "default",
@@ -1975,30 +2021,35 @@ export const keyboardData: KeyboardData = {
       position: [4, 2],
       hand: "left",
       finger: "fourth",
+      size: "M",
     },
     英数: {
       keyType: "default",
       position: [4, 3],
       hand: "left",
       finger: "third",
+      size: "M",
     },
     " ": {
       keyType: "default",
       position: [4, 4],
       hand: "left",
       finger: "thumb",
+      size: "mac-jis-space",
     },
     かな: {
       keyType: "default",
       position: [4, 5],
       hand: "right",
       finger: "first",
+      size: "M",
     },
     "r-Meta": {
       keyType: "default",
       position: [4, 6],
       hand: "right",
       finger: "second",
+      size: "M",
     },
     fn: {
       keyType: "default",
@@ -2169,12 +2220,14 @@ export const keyboardData: KeyboardData = {
       position: [0, 13],
       hand: "right",
       finger: "fourth",
+      size: "L",
     },
     Tab: {
       keyType: "default",
       position: [1, 0],
       hand: "left",
       finger: "fourth",
+      size: "L",
     },
     q: {
       keyType: "default",
@@ -2337,6 +2390,7 @@ export const keyboardData: KeyboardData = {
       position: [2, 0],
       hand: "left",
       finger: "fourth",
+      size: "XL",
     },
     a: {
       keyType: "default",
@@ -2475,12 +2529,14 @@ export const keyboardData: KeyboardData = {
       position: [2, 12],
       hand: "right",
       finger: "fourth",
+      size: "XL",
     },
     "l-Shift": {
       keyType: "default",
       position: [3, 0],
       hand: "left",
       finger: "fourth",
+      size: "XXXL",
     },
     z: {
       keyType: "default",
@@ -2607,36 +2663,42 @@ export const keyboardData: KeyboardData = {
       position: [3, 11],
       hand: "right",
       finger: "fourth",
+      size: "XXXL",
     },
     Control: {
       keyType: "default",
       position: [4, 0],
       hand: "left",
       finger: "fourth",
+      size: "XL",
     },
     option: {
       keyType: "default",
       position: [4, 1],
       hand: "left",
       finger: "fourth",
+      size: "M",
     },
     "l-Meta": {
       keyType: "default",
       position: [4, 2],
       hand: "left",
       finger: "fourth",
+      size: "XL",
     },
     " ": {
       keyType: "default",
       position: [4, 3],
       hand: "left",
       finger: "thumb",
+      size: "mac-us-space",
     },
     "r-Meta": {
       keyType: "default",
       position: [4, 4],
       hand: "right",
       finger: "third",
+      size: "XL",
     },
   },
 };

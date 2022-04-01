@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React from "react";
 import { makeStyles } from "@mui/styles";
-import Keyboard from "../../components/Keyboard";
+import Keyboard from "../../components/NewKeyboard";
 import HandSVG from "../../components/HandSVG";
 
 const useStyles = makeStyles(() => ({
@@ -12,9 +12,9 @@ const useStyles = makeStyles(() => ({
   handsContainer: {
     display: "flex",
     justifyContent: "center",
-    width: "100%",
+    width: "80%",
     position: "absolute",
-    top: "70px",
+    top: "10vh",
     left: "0",
     opacity: "0.6",
   },
@@ -23,30 +23,27 @@ const useStyles = makeStyles(() => ({
 type Props = {
   leftFin: "first" | "thumb" | "second" | "third" | "fourth" | null;
   rightFin: "first" | "thumb" | "second" | "third" | "fourth" | null;
+  keyboardType: "jis" | "us" | "mac-jis" | "mac-us";
+  nextKeys?: string[];
 };
 
-const KeyboardHand: React.FC<Props> = ({ leftFin, rightFin }) => {
+type KeyColor = {
+  [keyName: string]: string;
+};
+
+const KeyboardHand: React.VFC<Props> = ({ leftFin, rightFin, keyboardType, nextKeys = [] }) => {
   const classes = useStyles();
-  const [layoutName, setLayoutName] = useState("default");
 
   const leftHandColor = leftFin ? { [leftFin]: "#0000FF" } : undefined;
   const rightHandColor = rightFin ? { [rightFin]: "#0000FF" } : undefined;
-
-  document.onkeydown = (e) => {
-    if (e.key.toLowerCase() === "shift") {
-      setLayoutName("shift");
-    }
-  };
-
-  document.onkeyup = (e) => {
-    if (e.key.toLowerCase() === "shift") {
-      setLayoutName("default");
-    }
-  };
+  const keyColor: KeyColor = {};
+  nextKeys.forEach((keyName) => {
+    keyColor[keyName] = "#66FFCC";
+  });
 
   return (
     <div className={classes.keyboardContainer}>
-      <Keyboard layoutName={layoutName} />
+      <Keyboard keyboardType={keyboardType} color={keyColor} />
       <div className={classes.handsContainer}>
         <HandSVG hand="left" color={leftHandColor} />
         <HandSVG hand="right" color={rightHandColor} />

@@ -7,6 +7,8 @@ import { KeyData } from "../../data/keyboardData";
 import useProfileContext from "../../hooks/useProfileContext";
 import Header from "../../components/Header";
 
+import Keyboard from "../../components/NewKeyboard";
+
 // 子コンポーネントで使用する予定のデータ（現状はダミー）とその型
 
 type Props = {
@@ -31,6 +33,20 @@ const ResultPage: React.FC<Props> = ({ currGameData }) => {
           {/* <BestScores data={bestScores} /> */}
         </Box>
         <KeyStatistics data={currGameData.keyData} />
+        <br />
+        <br />
+        <Keyboard keyboardType="jis" />
+        <br />
+        <br />
+        <Keyboard keyboardType="us" />
+        <br />
+        <br />
+        <Keyboard keyboardType="mac-jis" />
+        <br />
+        <br />
+        <Keyboard keyboardType="mac-us" />
+        <br />
+        <br />
         <FingerStatistcs data={currGameData.keyData} />
       </Box>
     </div>

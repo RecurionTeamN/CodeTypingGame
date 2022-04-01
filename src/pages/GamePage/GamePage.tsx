@@ -51,7 +51,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   card: {
     backgroundColor: theme.palette.grey[50],
     width: "60%",
-    height: "400px",
+    height: "45vh",
   },
   cardContent: {
     height: "300px",
@@ -101,6 +101,7 @@ const GamePage: React.FC<Props> = ({ currGameData, setCurrGameData }) => {
   const [keyData, setKeyData] = useState(currGameData.keyData);
   const [lastAnsTime, setLastAnsTime] = useState(0);
   const [nextFinger, setNextFinger] = useState<NextFinger>({ leftHand: null, rightHand: null });
+  const [nextKeys, setNextKeys] = useState<string[]>([]);
 
   const scrollBox = createRef<HTMLDivElement>();
   const scroll = () => {
@@ -165,6 +166,44 @@ const GamePage: React.FC<Props> = ({ currGameData, setCurrGameData }) => {
         rightHand: targetData.finger,
       });
     }
+  };
+  const handleNextKeys = (index: number) => {
+    const targetKey = typingText.charAt(index) !== "\n" ? typingText.charAt(index) : "Enter";
+    const nextKeyArr: string[] = [];
+    if (keyData[targetKey].keyType === "default") nextKeyArr.push(targetKey);
+    else if (keyData[targetKey].keyType === "option") {
+      nextKeyArr.push("option");
+      const k = Object.keys(keyData).find(
+        (keyName) =>
+          keyData[keyName].keyType === "default" &&
+          keyData[keyName].position[0] === keyData[targetKey].position[0] &&
+          keyData[keyName].position[1] === keyData[targetKey].position[1]
+      );
+      if (typeof k !== "undefined") {
+        nextKeyArr.push(k);
+      } else {
+        // eslint-disable-next-line no-console
+        console.error("Error with option key: There is not the default key that has the same position.");
+      }
+    } else if (keyData[targetKey].keyType === "shift") {
+      nextKeyArr.push(keyData[targetKey].hand === "left" ? "r-Shift" : "l-Shift");
+      const k = Object.keys(keyData).find(
+        (keyName) =>
+          keyData[keyName].keyType === "default" &&
+          keyData[keyName].position[0] === keyData[targetKey].position[0] &&
+          keyData[keyName].position[1] === keyData[targetKey].position[1]
+      );
+      if (typeof k !== "undefined") {
+        nextKeyArr.push(k);
+      } else {
+        // eslint-disable-next-line no-console
+        console.error("Error with shift key: There is not the default key that has the same position.");
+      }
+    } else {
+      // eslint-disable-next-line no-console
+      console.error("Invalid key error: There is not such a key in the keyboard data.");
+    }
+    setNextKeys(nextKeyArr);
   };
 
   // const handleGameHistory = (speed: number, accuracy: number) => {
@@ -243,6 +282,7 @@ const GamePage: React.FC<Props> = ({ currGameData, setCurrGameData }) => {
         } else {
           setCurrentIndex(currentIndex + i);
           handleNextFinger(currentIndex + i);
+          handleNextKeys(currentIndex + i);
         }
       } else {
         setIsMissType(true);
@@ -258,7 +298,10 @@ const GamePage: React.FC<Props> = ({ currGameData, setCurrGameData }) => {
 
       if (currentIndex + 1 >= typingText.length) {
         gameFinished();
-      } else handleNextFinger(currentIndex + 1);
+      } else {
+        handleNextFinger(currentIndex + 1);
+        handleNextKeys(currentIndex + 1);
+      }
     } else {
       setIsMissType(true);
       setMissCount(missCount + 1);
@@ -279,6 +322,7 @@ const GamePage: React.FC<Props> = ({ currGameData, setCurrGameData }) => {
     setKeyData(currGameData.keyData);
     setLastAnsTime(0);
     handleNextFinger(0);
+    handleNextKeys(0);
   };
 
   // Enterを押すべき時に何も表示されないと分かりづらいので追加
@@ -316,7 +360,12 @@ const GamePage: React.FC<Props> = ({ currGameData, setCurrGameData }) => {
           </CardContent>
         </Card>
 
-        <KeyboardHand leftFin={nextFinger.leftHand} rightFin={nextFinger.rightHand} />
+        <KeyboardHand
+          keyboardType={userSettings.keyboardType}
+          nextKeys={nextKeys}
+          leftFin={nextFinger.leftHand}
+          rightFin={nextFinger.rightHand}
+        />
       </div>
 
       <SuccessModal
