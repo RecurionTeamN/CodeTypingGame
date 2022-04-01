@@ -173,28 +173,35 @@ const GamePage: React.FC<Props> = ({ currGameData, setCurrGameData }) => {
     if (keyData[targetKey].keyType === "default") nextKeyArr.push(targetKey);
     else if (keyData[targetKey].keyType === "option") {
       nextKeyArr.push("option");
-      Object.keys(keyData)
-        .filter(
-          (keyName) =>
-            keyData[keyName].keyType === "default" &&
-            keyData[keyName].position[0] === keyData[targetKey].position[0] &&
-            keyData[keyName].position[1] === keyData[targetKey].position[1]
-        )
-        .forEach((keyName) => {
-          nextKeyArr.push(keyName);
-        });
-    } else {
+      const k = Object.keys(keyData).find(
+        (keyName) =>
+          keyData[keyName].keyType === "default" &&
+          keyData[keyName].position[0] === keyData[targetKey].position[0] &&
+          keyData[keyName].position[1] === keyData[targetKey].position[1]
+      );
+      if (typeof k !== "undefined") {
+        nextKeyArr.push(k);
+      } else {
+        // eslint-disable-next-line no-console
+        console.error("Error with option key: There is not the default key that has the same position.");
+      }
+    } else if (keyData[targetKey].keyType === "shift") {
       nextKeyArr.push(keyData[targetKey].hand === "left" ? "r-Shift" : "l-Shift");
-      Object.keys(keyData)
-        .filter(
-          (keyName) =>
-            keyData[keyName].keyType === "default" &&
-            keyData[keyName].position[0] === keyData[targetKey].position[0] &&
-            keyData[keyName].position[1] === keyData[targetKey].position[1]
-        )
-        .forEach((keyName) => {
-          nextKeyArr.push(keyName);
-        });
+      const k = Object.keys(keyData).find(
+        (keyName) =>
+          keyData[keyName].keyType === "default" &&
+          keyData[keyName].position[0] === keyData[targetKey].position[0] &&
+          keyData[keyName].position[1] === keyData[targetKey].position[1]
+      );
+      if (typeof k !== "undefined") {
+        nextKeyArr.push(k);
+      } else {
+        // eslint-disable-next-line no-console
+        console.error("Error with shift key: There is not the default key that has the same position.");
+      }
+    } else {
+      // eslint-disable-next-line no-console
+      console.error("Invalid key error: There is not such a key in the keyboard data.");
     }
     setNextKeys(nextKeyArr);
   };

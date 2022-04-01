@@ -68,18 +68,25 @@ const SettingPage = () => {
     if (!isShowingAdditionalSetting && language !== "") {
       if (code === "") {
         const randomTitile = codeTitleArr[Math.floor(Math.random() * codeTitleArr.length)] as CodeTitle;
-        setCodeTitle(randomTitile);
-        setCode(codeData[language as Language][randomTitile]);
-      }
-      profileDispatch({
-        type: "SET_USERSETTINGS",
-        payload: {
-          keyboardType: keyboard as KeyboardTypes,
-          codeLang: language as CodeLangTypes,
-          codeTitle,
-          codeContent: code,
-        },
-      });
+        profileDispatch({
+          type: "SET_USERSETTINGS",
+          payload: {
+            keyboardType: keyboard as KeyboardTypes,
+            codeLang: language as CodeLangTypes,
+            codeTitle: randomTitile,
+            codeContent: codeData[language as Language][randomTitile],
+          },
+        });
+      } else
+        profileDispatch({
+          type: "SET_USERSETTINGS",
+          payload: {
+            keyboardType: keyboard as KeyboardTypes,
+            codeLang: language as CodeLangTypes,
+            codeTitle,
+            codeContent: code,
+          },
+        });
       toast.success("Saved user settings!");
     } else if (isShowingAdditionalSetting) {
       profileDispatch({
