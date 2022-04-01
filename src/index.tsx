@@ -7,11 +7,11 @@ import { ProfileContextProvider } from "./context/profile/ProfileContext";
 
 ReactDOM.render(
   <React.StrictMode>
-    <ProfileContextProvider>
-      <AuthContextProvider>
+    <AuthContextProvider>
+      <ProfileContextProvider>
         <App />
-      </AuthContextProvider>
-    </ProfileContextProvider>
+      </ProfileContextProvider>
+    </AuthContextProvider>
   </React.StrictMode>,
   document.getElementById("root")
 );

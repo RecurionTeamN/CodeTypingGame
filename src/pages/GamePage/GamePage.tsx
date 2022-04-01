@@ -1,5 +1,4 @@
 import React, { useState, useRef, createRef } from "react";
-import { StyledEngineProvider } from "@mui/material/styles";
 import { makeStyles } from "@mui/styles";
 import { Typography, Card, CardContent, Theme } from "@mui/material";
 import { toast } from "react-toastify";
@@ -11,6 +10,8 @@ import { KeyData } from "../../data/keyboardData";
 import useProfileContext from "../../hooks/useProfileContext";
 import useAuthContext from "../../hooks/useAuthContext";
 import addGameHistoryDoc from "../../firebase/utils/addGameHistoryDoc";
+import setProfilesDoc from "../../firebase/utils/setProfilesDoc";
+import { BestScores } from "../../context/profile/types";
 
 const useStyles = makeStyles((theme: Theme) => ({
   mainContainer: {
@@ -93,7 +94,7 @@ type NextFinger = {
 
 const GamePage: React.FC<Props> = ({ currGameData, setCurrGameData }) => {
   const classes = useStyles();
-  const { profileState } = useProfileContext();
+  const { profileState, dispatch: profileDispatch } = useProfileContext();
   const { authState } = useAuthContext();
   const { userSettings } = profileState;
 
@@ -235,7 +236,31 @@ const GamePage: React.FC<Props> = ({ currGameData, setCurrGameData }) => {
       keyData,
     });
     if (authState.user) {
+      // Firebase に今回のゲームデータを GameHistory コレクションに保存する
       addGameHistoryDoc(authState.user?.uid, accuracy, userSettings.codeLang, speed).catch((err) =>
+        toast.error((err as Error).message)
+      );
+
+      // Firebase に今回の userSettings と bestScores を Profiles コレクションに更新する
+      const currBestScore = profileState.bestScores[userSettings.codeLang];
+      const currLanguage = userSettings.codeLang;
+      let updatedBestScores = { ...profileState.bestScores };
+
+      // 今回の言語のベストスコアが null の場合
+      if (currBestScore.accuracy === null || currBestScore.speed === null) {
+        updatedBestScores = { ...updatedBestScores, [currLanguage]: { accuracy, speed } };
+        profileDispatch({ type: "SET_BESTSCORES", payload: updatedBestScores as BestScores });
+      }
+      // 今回の言語のベストスコアに値が保存されている場合
+      else if (currBestScore.accuracy && currBestScore.speed) {
+        if (currBestScore.accuracy < accuracy && currBestScore.speed < speed) {
+          updatedBestScores = { ...updatedBestScores, [currLanguage]: { accuracy, speed } };
+          profileDispatch({ type: "SET_BESTSCORES", payload: updatedBestScores as BestScores });
+        }
+      }
+
+      // Firebase への更新をする
+      setProfilesDoc(authState.user.uid, updatedBestScores, profileState.userSettings).catch((err) =>
         toast.error((err as Error).message)
       );
     }
@@ -326,7 +351,7 @@ const GamePage: React.FC<Props> = ({ currGameData, setCurrGameData }) => {
   if (currText === "\n") currText = "↩︎\n";
 
   return (
-    <StyledEngineProvider injectFirst>
+    <>
       <div className={classes.mainContainer}>
         <Header />
         <div className={classes.container}>
@@ -367,7 +392,6 @@ const GamePage: React.FC<Props> = ({ currGameData, setCurrGameData }) => {
           </div>
         </div>
       </div>
-
       <SuccessModal
         result={{
           timeTyping,
@@ -377,7 +401,7 @@ const GamePage: React.FC<Props> = ({ currGameData, setCurrGameData }) => {
         successModalOpen={successModalOpen}
         successModalClose={() => setSuccessModalOpen(false)}
       />
-    </StyledEngineProvider>
+    </>
   );
 };
 
