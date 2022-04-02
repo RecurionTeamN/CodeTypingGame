@@ -20,7 +20,6 @@ const useLogout = () => {
 
       await signOut(auth);
       dispatch({ type: "LOGOUT" });
-      toast.success("Successfully Logged Out!");
       navigate("/");
     } catch (err) {
       toast.error((err as Error).message);
