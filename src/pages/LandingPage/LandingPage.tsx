@@ -38,7 +38,7 @@ const useStyles = makeStyles(() => ({
     height: "15vh",
     display: "flex",
     flexDirection: "column",
-    justifyContent: "center",
+    justifyContent: "flex-start",
   },
   content: {
     position: "relative",

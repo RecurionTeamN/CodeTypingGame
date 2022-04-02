@@ -7,7 +7,7 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
-import { MdSettings, MdLogout } from "react-icons/md";
+import { MdLogout } from "react-icons/md";
 
 import { Link } from "react-router-dom";
 import useLogout from "../hooks/useLogout";
@@ -81,12 +81,6 @@ const AccountMenu = () => {
           <Avatar /> {authState.user?.displayName}
         </MenuItem>
         <Divider />
-        <MenuItem component={Link} to="/settings">
-          <ListItemIcon>
-            <MdSettings />
-          </ListItemIcon>
-          Settings
-        </MenuItem>
         {/* eslint-disable-next-line @typescript-eslint/no-misused-promises */}
         <MenuItem onClick={logout}>
           <ListItemIcon>
