@@ -46,6 +46,7 @@ const useStyles = makeStyles(() => ({
     display: "flex",
     flexDirection: "column",
     justifyContent: "space-between",
+    minWidth: "300px",
     maxWidth: "600px",
     height: "350px",
   },
@@ -55,7 +56,7 @@ const useStyles = makeStyles(() => ({
   img: {
     width: "550px",
     [theme.breakpoints.up("xl")]: {
-      width: "650px",
+      width: "625px",
     },
   },
   codeLanguagesContainer: {
