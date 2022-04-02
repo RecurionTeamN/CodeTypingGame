@@ -8,9 +8,10 @@ type Props = {
   color?: {
     [keyName: string]: string;
   };
+  onClick?: (keyName: string) => void;
 };
 
-const Keyboard: React.VFC<Props> = ({ keyboardType, color = {} }) => {
+const Keyboard: React.VFC<Props> = ({ keyboardType, color = {}, onClick = () => null }) => {
   const keyData = keyboardData[keyboardType];
   const defaultKeyArr = Object.keys(keyData).filter((keyName) => keyData[keyName].keyType === "default");
   // keyboardのposition(行番号、列番号)でソート。
@@ -84,6 +85,7 @@ const Keyboard: React.VFC<Props> = ({ keyboardType, color = {} }) => {
             width={width}
             height={height}
             id={keyName}
+            onClick={() => onClick(keyName)}
           />
         ) : (
           <path
@@ -105,6 +107,7 @@ const Keyboard: React.VFC<Props> = ({ keyboardType, color = {} }) => {
             z
           `}
             id={keyName}
+            onClick={() => onClick(keyName)}
           />
         )}
         <text
