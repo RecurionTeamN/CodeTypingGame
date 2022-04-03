@@ -9,7 +9,9 @@ type Props = {
   codeLanguage: CodeLangTypes;
   timeTyping: number;
   missCount: number;
+  started: boolean;
   reset: () => void;
+  start: () => void;
 };
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -22,7 +24,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-const GameHeader: React.VFC<Props> = ({ codeLanguage, timeTyping, missCount, reset }) => {
+const GameHeader: React.VFC<Props> = ({ codeLanguage, timeTyping, missCount, started, reset, start }) => {
   const classes = useStyles();
 
   return (
@@ -40,9 +42,15 @@ const GameHeader: React.VFC<Props> = ({ codeLanguage, timeTyping, missCount, res
               {codeLanguage}
             </Typography>
           </div>
-          <Button variant="contained" color="inherit" sx={{ color: "black" }} onClick={reset}>
-            reset
-          </Button>
+          {started ? (
+            <Button variant="contained" color="inherit" sx={{ color: "black" }} onClick={reset}>
+              reset
+            </Button>
+          ) : (
+            <Button variant="contained" color="primary" sx={{ color: "white" }} onClick={start}>
+              start
+            </Button>
+          )}
         </Toolbar>
       </AppBar>
     </Box>
