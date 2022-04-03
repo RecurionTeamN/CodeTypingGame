@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 import theme from "../../styles/Theme";
 import MySelect from "./MySelect";
 import SettingModal from "./SettingModal";
-import { keyboardData } from "../../data/keyboardData";
+import { keyboardData, KeyData } from "../../data/keyboardData";
 import useProfileContext from "../../hooks/useProfileContext";
 import { codeLanguages, CodeLangTypes, KeyboardTypes } from "../../context/profile/types";
 import Header from "../../components/Header";
@@ -15,7 +15,17 @@ import { CodesDocument } from "../../firebase/Codes/types";
 const keyboards = Object.keys(keyboardData) as KeyboardTypes[];
 const languages = codeLanguages;
 
-const SettingPage = () => {
+type Props = {
+  setCurrGameData: React.Dispatch<
+    React.SetStateAction<{
+      speed: number;
+      accuracy: number;
+      keyData: KeyData;
+    }>
+  >;
+};
+
+const SettingPage: React.FC<Props> = ({ setCurrGameData }) => {
   const { profileState, dispatch: profileDispatch } = useProfileContext();
   const { userSettings } = profileState;
   const navigate = useNavigate();
@@ -82,13 +92,18 @@ const SettingPage = () => {
 
   const startGame = (): void => {
     if (!isShowingAdditionalSetting && language && codeDocuments) {
+      setCurrGameData({
+        speed: 0,
+        accuracy: 0,
+        keyData: keyboardData[keyboard],
+      });
       if (code === "") {
         // コードタイトルが選択されていない場合、ランダムなコードでゲーム開始
         const randomCode = codeDocuments[Math.floor(Math.random() * codeDocuments.length)];
         profileDispatch({
           type: "SET_USERSETTINGS",
           payload: {
-            keyboardType: keyboard as KeyboardTypes,
+            keyboardType: keyboard,
             codeLang: language,
             codeTitle: randomCode.codeTitle,
             codeContent: randomCode.codeContent,
@@ -99,7 +114,7 @@ const SettingPage = () => {
         profileDispatch({
           type: "SET_USERSETTINGS",
           payload: {
-            keyboardType: keyboard as KeyboardTypes,
+            keyboardType: keyboard,
             codeLang: language,
             codeTitle,
             codeContent: code,
@@ -107,10 +122,15 @@ const SettingPage = () => {
         });
       }
     } else if (isShowingAdditionalSetting) {
+      setCurrGameData({
+        speed: 0,
+        accuracy: 0,
+        keyData: keyboardData[keyboard],
+      });
       profileDispatch({
         type: "SET_USERSETTINGS",
         payload: {
-          keyboardType: keyboard as KeyboardTypes,
+          keyboardType: keyboard,
           codeLang: additionalSetting.language as CodeLangTypes,
           codeTitle: "",
           codeContent: additionalSetting.code,
