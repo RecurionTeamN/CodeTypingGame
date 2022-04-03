@@ -66,6 +66,7 @@ const generateDailyHistory = (
 
   dailyHistory[dailyHistory.length] = { month, dayofweek, weekOfMonth, day: date.getDate(), times };
   date.setDate(date.getDate() + 1);
+  if (date.getDay() + 1 === 1) weekOfMonth += 1;
 
   // 翌月の1日まで繰り返す
   let j = dailyHistory.length;

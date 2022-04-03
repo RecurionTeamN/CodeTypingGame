@@ -4,12 +4,11 @@ import { makeStyles } from "@mui/styles";
 import useProfileContext from "../../hooks/useProfileContext";
 
 type ResultTableProps = {
-  height: number;
-  width: number;
+  tableHeight: number;
 };
 
 const useStyles = makeStyles({
-  root: {
+  dataGrid: {
     "&.MuiDataGrid-root .MuiDataGrid-columnHeader:focus, &.MuiDataGrid-root .MuiDataGrid-cell:focus": {
       outline: "none",
     },
@@ -17,32 +16,39 @@ const useStyles = makeStyles({
       backgroundColor: "rgba(137, 189, 222, 0.6)",
       color: "black",
     },
+    "& .MuiDataGrid-cell .MuiDataGrid-columnHeaderTitleContainer .MuiDataGrid-cellContent": {
+      padding: 39,
+    },
   },
 });
 
-const ResultTable: React.VFC<ResultTableProps> = ({ height, width }) => {
+const ResultTable: React.VFC<ResultTableProps> = ({ tableHeight }) => {
   const classes = useStyles();
   const { profileState } = useProfileContext();
-
   const columns: GridColDef[] = [
     {
       field: "codeLang",
       headerName: "Code Language",
-      width: width / 3,
+      minWidth: 150,
+      flex: 1,
       headerAlign: "left",
     },
     {
       field: "accuracy",
       headerName: "Best accuracy [%]",
-      width: width / 3,
+      minWidth: 150,
+      flex: 1,
       headerAlign: "right",
+      align: "right",
     },
     {
       field: "speed",
       headerName: "Best speed [kpm]",
       type: "number",
-      width: width / 3,
+      minWidth: 150,
+      flex: 1,
       headerAlign: "right",
+      align: "right",
     },
   ];
 
@@ -71,17 +77,15 @@ const ResultTable: React.VFC<ResultTableProps> = ({ height, width }) => {
   );
 
   return (
-    <div style={{ height, width }}>
+    <div style={{ display: "flex", height: tableHeight }}>
       <DataGrid
         rows={profileStateforTableWithoutEmptyData.sort((prev, curr) => prev.codeLang.localeCompare(curr.codeLang))}
-        rowHeight={50}
         columns={columns}
         pageSize={4}
         rowsPerPageOptions={[4]}
         disableSelectionOnClick
         disableColumnMenu
-        disableColumnFilter
-        className={classes.root}
+        className={classes.dataGrid}
         components={{
           NoRowsOverlay: customNoRowsOverlay,
         }}
