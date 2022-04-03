@@ -64,14 +64,12 @@ const DashboardPage = () => {
               {/* カレンダーヒートマップ */}
               {gameHistoryDocuments && (
                 <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
-                  {[4, 3, 2, 1, 0].map((shift) => (
+                  {[5, 4, 3, 2, 1, 0].map((shift) => (
                     <CalendarHeatmap
                       key={shift}
                       gameHistoryDocuments={gameHistoryDocuments}
                       currentYear={
-                        new Date().getMonth() - shift >= 0
-                          ? new Date().getFullYear()
-                          : new Date().getFullYear() - 1 + (new Date().getMonth() - shift) / 11 + 0
+                        new Date().getMonth() - shift >= 0 ? new Date().getFullYear() : new Date().getFullYear() - 1
                       }
                       currentMonth={
                         new Date().getMonth() - shift >= 0
