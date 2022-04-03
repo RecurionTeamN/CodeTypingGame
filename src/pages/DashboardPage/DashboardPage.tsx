@@ -64,7 +64,7 @@ const DashboardPage = () => {
               {/* カレンダーヒートマップ */}
               {gameHistoryDocuments && (
                 <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
-                  {[5, 4, 3, 2, 1, 0].map((shift) => (
+                  {[2, 1, 0].map((shift) => (
                     <CalendarHeatmap
                       key={shift}
                       gameHistoryDocuments={gameHistoryDocuments}
