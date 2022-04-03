@@ -89,19 +89,9 @@ const DashboardPage = () => {
               <Grid item xs={12} md={12} xl={6}>
                 <GameStartCard displayName={authState.user?.displayName} />
               </Grid>
-              {/* <Grid item xs={12} md={12} xl={6}> */}
-              {/* <LineChart gameHistory={gameHistoryDocuments} /> */}
-              {/* </Grid> */}
-              {/* <Box
-                sx={{
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  marginTop: 1,
-                }}
-              > 
-              </Box> */}
+              <Grid item xs={12} md={12} xl={6}>
+                <LineChart gameHistory={gameHistoryDocuments} />
+              </Grid>
               <Grid item xs={12} md={12} xl={6}>
                 <ResultTable tableHeight={200} />
               </Grid>
