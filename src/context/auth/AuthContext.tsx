@@ -35,11 +35,9 @@ export const AuthContextProvider: React.FC = ({ children }) => {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       dispatch({ type: "LOGIN", payload: user });
-      // eslint-disable-next-line no-console
-      console.log(auth);
     });
 
-    return () => unsubscribe();
+    return unsubscribe;
   }, []);
 
   const value = useMemo(

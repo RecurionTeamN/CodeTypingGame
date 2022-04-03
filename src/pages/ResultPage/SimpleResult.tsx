@@ -10,7 +10,7 @@ type Props = {
 
 const SimpleResult: React.VFC<Props> = ({ language, accuracy, speed }) => (
   <div>
-    <h3>Result({language})</h3>
+    <h2>Result({language})</h2>
     <Box sx={{ display: "flex", flexDirection: "row", justifyContent: "center" }}>
       <DoughnutChartResult type="accuracy" value={accuracy} />
       <DoughnutChartResult type="speed" value={speed} />

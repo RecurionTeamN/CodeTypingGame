@@ -1,18 +1,18 @@
 import { SelectChangeEvent, Button, TextField, Stack, Box, Grid } from "@mui/material";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import theme from "../../styles/Theme";
 import MySelect from "./MySelect";
 import SettingModal from "./SettingModal";
-import TypingLetters from "./TypingLetters";
-import codeData, { Language, CodeTitle } from "./CodeContentData";
-import { keyboardData, KeyboardData } from "../../data/keyboardData";
+import { keyboardData } from "../../data/keyboardData";
 import useProfileContext from "../../hooks/useProfileContext";
 import { codeLanguages, CodeLangTypes, KeyboardTypes } from "../../context/profile/types";
 import Header from "../../components/Header";
+import fetchCodesDocs from "../../firebase/utils/fetchCodesDocs";
+import { CodesDocument } from "../../firebase/Codes/types";
 
-const keyboards = Object.keys(keyboardData);
+const keyboards = Object.keys(keyboardData) as KeyboardTypes[];
 const languages = codeLanguages;
 
 const SettingPage = () => {
@@ -21,7 +21,8 @@ const SettingPage = () => {
   const navigate = useNavigate();
 
   const [keyboard, setKeyboard] = useState(userSettings.keyboardType);
-  const [language, setLanguage] = useState<Language | string>("");
+  const [language, setLanguage] = useState<CodeLangTypes>(userSettings.codeLang);
+  const [codeDocuments, setCodeDocuments] = useState<CodesDocument[]>();
   const [codeTitle, setCodeTitle] = useState<string>("");
   const [codeTitleArr, setCodeTitleArr] = useState<string[]>([]);
   const [code, setCode] = useState<string>("");
@@ -30,15 +31,28 @@ const SettingPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isShowingAdditionalSetting, setIsShowingAdditionalSetting] = useState(false);
 
+  useEffect(() => {
+    try {
+      const getCodeDocuments = async () => {
+        const results = await fetchCodesDocs(language);
+        setCodeDocuments(results);
+        setCodeTitleArr(results.map((doc) => doc.codeTitle));
+      };
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      getCodeDocuments();
+    } catch (err) {
+      toast.error((err as Error).message);
+    }
+  }, [language]);
+
   const handleKeyboardChange = (event: SelectChangeEvent<string>): void => {
-    setKeyboard(event.target.value as keyof KeyboardData);
+    setKeyboard(event.target.value as KeyboardTypes);
   };
 
   const handleLanguageChange = (event: SelectChangeEvent<string>): void => {
-    setLanguage(event.target.value as Language);
+    setLanguage(event.target.value as CodeLangTypes);
     setCodeTitle("");
     setCode("");
-    setCodeTitleArr(Object.keys(codeData[event.target.value as Language]));
     const codeSelector = document.querySelector("#code-select");
     if (codeSelector !== null) {
       codeSelector.childNodes[0].nodeValue = null;
@@ -46,14 +60,16 @@ const SettingPage = () => {
   };
 
   const handleCodeChange = (event: SelectChangeEvent<string>): void => {
-    setCodeTitle(event.target.value as CodeTitle);
-    setCode(codeData[language as Language][event.target.value as CodeTitle]);
+    setCodeTitle(event.target.value);
+    if (codeDocuments) {
+      setCode(codeDocuments.filter((doc) => doc.codeTitle === event.target.value)[0].codeContent);
+    }
   };
 
   const toggleModal = (): void => setIsModalOpen(!isModalOpen);
 
   const resetDefaultSetting = (): void => {
-    setLanguage("");
+    setLanguage(userSettings.codeLang);
     setCodeTitle("");
     setCodeTitleArr([]);
     setCode("");
@@ -65,28 +81,30 @@ const SettingPage = () => {
   };
 
   const startGame = (): void => {
-    if (!isShowingAdditionalSetting && language !== "") {
+    if (!isShowingAdditionalSetting && language && codeDocuments) {
       if (code === "") {
-        const randomTitile = codeTitleArr[Math.floor(Math.random() * codeTitleArr.length)] as CodeTitle;
+        // コードタイトルが選択されていない場合、ランダムなコードでゲーム開始
         profileDispatch({
           type: "SET_USERSETTINGS",
           payload: {
             keyboardType: keyboard as KeyboardTypes,
-            codeLang: language as CodeLangTypes,
-            codeTitle: randomTitile,
-            codeContent: codeData[language as Language][randomTitile],
+            codeLang: language,
+            codeTitle,
+            codeContent: codeDocuments[Math.floor(Math.random() * codeDocuments.length)].codeContent,
           },
         });
-      } else
+      } else {
+        // コードタイトルが選択されている場合
         profileDispatch({
           type: "SET_USERSETTINGS",
           payload: {
             keyboardType: keyboard as KeyboardTypes,
-            codeLang: language as CodeLangTypes,
+            codeLang: language,
             codeTitle,
             codeContent: code,
           },
         });
+      }
       toast.success("Saved user settings!");
     } else if (isShowingAdditionalSetting) {
       profileDispatch({
@@ -111,7 +129,6 @@ const SettingPage = () => {
     <div>
       <Header />
       <Grid container spacing={0} direction="column" alignItems="center" justifyContent="center">
-        <TypingLetters initLetters="Recursion Typing Game!" secondLetters="Hurry up !!!! Hurry up!!!!!!" />
         <Stack spacing={3} paddingTop={5}>
           <Box sx={{ color: theme.palette.error.main }}>※必須項目：お使いのキーボードを選択下さい。</Box>
           <MySelect
@@ -125,7 +142,12 @@ const SettingPage = () => {
           {!isShowingAdditionalSetting && (
             <>
               <Box sx={{ color: theme.palette.error.main }}>※必須項目：練習したいプログラミング言語を選択下さい。</Box>
-              <MySelect label="Language" options={languages} onchange={handleLanguageChange} />
+              <MySelect
+                label="Language"
+                options={languages}
+                onchange={handleLanguageChange}
+                defaultValue={userSettings.codeLang}
+              />
               <Box sx={{ color: theme.palette.success.main }}>
                 任意項目：練習したいコードを選択下さい。未選択時は言語を元にランダムなコードを使用します。
               </Box>

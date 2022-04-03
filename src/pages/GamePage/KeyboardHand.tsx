@@ -7,15 +7,16 @@ const useStyles = makeStyles(() => ({
   keyboardContainer: {
     marginTop: "20px",
     position: "relative",
-    width: "60%",
+    width: "95%",
+    paddingLeft: "35px",
   },
   handsContainer: {
     display: "flex",
     justifyContent: "center",
     width: "80%",
     position: "absolute",
-    top: "10vh",
-    left: "0",
+    top: "7vh",
+    left: "35px",
     opacity: "0.6",
   },
 }));

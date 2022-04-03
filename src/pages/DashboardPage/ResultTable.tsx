@@ -1,10 +1,9 @@
 import React from "react";
 import { DataGrid, GridColDef, GridOverlay } from "@mui/x-data-grid";
 import { makeStyles } from "@mui/styles";
-import { State } from "../../context/profile/types";
+import useProfileContext from "../../hooks/useProfileContext";
 
 type ResultTableProps = {
-  profileState: State;
   height: number;
   width: number;
 };
@@ -21,8 +20,9 @@ const useStyles = makeStyles({
   },
 });
 
-const ResultTable: React.VFC<ResultTableProps> = ({ profileState, height, width }) => {
+const ResultTable: React.VFC<ResultTableProps> = ({ height, width }) => {
   const classes = useStyles();
+  const { profileState } = useProfileContext();
 
   const columns: GridColDef[] = [
     {

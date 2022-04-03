@@ -1,5 +1,6 @@
-import React from "react";
-import Box from "@mui/material/Box";
+import React, { useState } from "react";
+import { makeStyles } from "@mui/styles";
+import { Box, ToggleButton, ToggleButtonGroup } from "@mui/material";
 import HandSVG from "../../components/HandSVG";
 import { KeyData } from "../../data/keyboardData";
 
@@ -11,7 +12,39 @@ type Props = {
   data: KeyData;
 };
 
+const useStyles = makeStyles(() => ({
+  container: {
+    width: "90%",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+  },
+  rowFlex: {
+    width: "100%",
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  rowFlexCenter: {
+    width: "100%",
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "center",
+  },
+  rowFlexEnd: {
+    width: "100%",
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "end",
+  },
+}));
+
 const FingerStatistics: React.VFC<Props> = ({ data }) => {
+  const classes = useStyles();
+  const [showMode, setShowMode] = useState<"speed" | "accuracy">("speed");
+  const toggleShowMode = (event: React.MouseEvent<HTMLElement>, newMode: "speed" | "accuracy") => {
+    setShowMode(newMode);
+  };
   // キー毎の情報を指ごとの情報に変換する
   const fingerData: {
     [key1 in Hand]: {
@@ -54,17 +87,40 @@ const FingerStatistics: React.VFC<Props> = ({ data }) => {
         );
         const speed = Math.floor((currFinData.pushCountSum - currFinData.missCountSum) / (currFinData.timeSecSum / 60));
 
-        // 使用されていない指の値はNaNになるため、条件分岐で色をつけない。
-        if (Number.isNaN(speed)) fingerData[hand][finger].color = "#e6e6e6";
-        else if (speed >= 200) fingerData[hand][finger].color = "#0000FF";
-        else if (speed >= 150) fingerData[hand][finger].color = "#0099FF";
-        else if (speed >= 100) fingerData[hand][finger].color = "#00CCFF";
-        else if (speed >= 50) fingerData[hand][finger].color = "#00FFFF";
+        if (showMode === "speed") {
+          if (Number.isNaN(speed)) fingerData[hand][finger].color = "#e6e6e6";
+          else if (speed >= 200) fingerData[hand][finger].color = "#0000FF";
+          else if (speed >= 150) fingerData[hand][finger].color = "#0099FF";
+          else if (speed >= 100) fingerData[hand][finger].color = "#00CCFF";
+          else if (speed >= 50) fingerData[hand][finger].color = "#00FFFF";
+          else fingerData[hand][finger].color = "#CCFFFF";
+        } else if (Number.isNaN(accuracy)) fingerData[hand][finger].color = "#e6e6e6";
+        else if (accuracy >= 95) fingerData[hand][finger].color = "#0000FF";
+        else if (accuracy >= 90) fingerData[hand][finger].color = "#0099FF";
+        else if (accuracy >= 80) fingerData[hand][finger].color = "#00CCFF";
+        else if (accuracy >= 70) fingerData[hand][finger].color = "#00FFFF";
         else fingerData[hand][finger].color = "#CCFFFF";
+
+        let fingerText = "";
+        switch (finger) {
+          case "first":
+            fingerText = "人差し指";
+            break;
+          case "second":
+            fingerText = "中指";
+            break;
+          case "third":
+            fingerText = "薬指";
+            break;
+          case "fourth":
+            fingerText = "小指";
+            break;
+          default:
+        }
 
         return (
           <Box key={finger} sx={{ px: 2 }}>
-            {finger} <br />
+            {fingerText} <br />
             {Number.isNaN(accuracy) ? "-" : accuracy}% <br />
             {Number.isNaN(speed) ? "-" : speed}kpm <br />
           </Box>
@@ -78,7 +134,7 @@ const FingerStatistics: React.VFC<Props> = ({ data }) => {
     };
     return (
       <div key={hand}>
-        <h4>{hand} fingers</h4>
+        <h4>{hand === "left" ? "左手" : "右手"}</h4>
         <HandSVG hand={hand} color={color} />
         <Box sx={{ display: "flex", justifyContent: "space-evenly" }}>{eachHandResults}</Box>
       </div>
@@ -87,11 +143,11 @@ const FingerStatistics: React.VFC<Props> = ({ data }) => {
 
   // 後々に手のコンポーネントを作成して、指毎の統計を見やすいデザインとする。
   return (
-    <div>
-      <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-        <h3>Finger Master</h3>
+    <div className={classes.container}>
+      <div className={classes.rowFlex}>
+        <h2>Finger Master(指毎の統計情報)</h2>
         <Box sx={{ display: "flex", alignItems: "center" }}>
-          <p>slow</p>
+          <p>{showMode === "speed" ? "遅い" : "不正確"}</p>
           <Box
             sx={{
               width: 20,
@@ -132,10 +188,21 @@ const FingerStatistics: React.VFC<Props> = ({ data }) => {
               m: 1,
             }}
           />
-          <p>fast</p>
+          <p>{showMode === "speed" ? "速い" : "正確"}</p>
         </Box>
-      </Box>
-      <Box sx={{ display: "flex", justifyContent: "space-between" }}>{statistics}</Box>
+      </div>
+      <div className={classes.rowFlexEnd}>
+        <ToggleButtonGroup exclusive value={showMode} onChange={toggleShowMode}>
+          <ToggleButton value="speed" aria-label="speed result">
+            速さ
+          </ToggleButton>
+          <ToggleButton value="accuracy" aria-label="accuracy result">
+            正確性
+          </ToggleButton>
+        </ToggleButtonGroup>
+      </div>
+      <div className={classes.rowFlexCenter}>{statistics}</div>
+      <br />
     </div>
   );
 };

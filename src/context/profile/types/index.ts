@@ -51,14 +51,6 @@ export type State = {
   bestScores: BestScores;
 };
 
-// type setBestScoresPayloadType = {
-//   codeLang: CodeLangTypes;
-//   data: {
-//     accuracy: number | null;
-//     speed: number | null;
-//   }
-// }
-
 export type Action =
   | { type: "SET_USERSETTINGS"; payload: UserSettings }
   | { type: "SET_BESTSCORES"; payload: BestScores };

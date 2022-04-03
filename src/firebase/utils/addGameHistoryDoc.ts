@@ -1,7 +1,7 @@
 import { addDoc, collection, Timestamp } from "firebase/firestore";
 import { db } from "../config";
 
-const postGameHistory = async (uid: string, accuracy: number, codeLang: string, speed: number) => {
+const addGameHistoryDoc = async (uid: string, accuracy: number, codeLang: string, speed: number) => {
   const ref = collection(db, "GameHistory");
   await addDoc(ref, {
     accuracy,
@@ -14,4 +14,4 @@ const postGameHistory = async (uid: string, accuracy: number, codeLang: string, 
   console.log("added GameHistory doc!");
 };
 
-export default postGameHistory;
+export default addGameHistoryDoc;

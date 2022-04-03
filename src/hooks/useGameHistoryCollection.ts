@@ -32,7 +32,7 @@ const useGameHistoryCollection = () => {
     );
 
     // unsubscribe on dismount
-    return () => unsubscribe();
+    return unsubscribe;
   }, [authState.user]);
 
   return { documents, isPending };

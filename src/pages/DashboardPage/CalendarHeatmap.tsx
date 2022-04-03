@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from "react";
 import { makeStyles } from "@mui/styles";
 import * as d3 from "d3";
 import { GameHistoryDocument } from "../../firebase/GameHistory/types";
+import theme from "../../styles/Theme";
 
 type CalendarHeatmapProps = {
   gameHistoryDocuments: GameHistoryDocument[];
@@ -121,7 +122,10 @@ const CalendarHeatmap: React.VFC<CalendarHeatmapProps> = ({
   const h = rectSize * 6; // 第1週〜6週分の高さに設定
 
   // カレンダーの色は、遊んだ回数によって10段階に分ける
-  const colorScale = d3.scaleSequential().domain([0, 5]).interpolator(d3.interpolate("#EFFFFF", "#0099FF"));
+  const colorScale = d3
+    .scaleSequential()
+    .domain([0, 10])
+    .interpolator(d3.interpolate(theme.palette.grey[50], "#0099FF"));
   // Sun.(1)->Sat.(7)
   const xScale = d3.scaleBand().domain(["1", "2", "3", "4", "5", "6", "7"]).range([0, w]).padding(0.1);
   // first week(1)-> sixth week(6)

@@ -1,20 +1,7 @@
 import React from "react";
 import { AppBar, Typography, Box, Toolbar, Button, Theme } from "@mui/material";
 import { makeStyles } from "@mui/styles";
-import {
-  SiTypescript,
-  SiJavascript,
-  SiPython,
-  SiGo,
-  SiJava,
-  SiKotlin,
-  SiPhp,
-  SiCsharp,
-  SiSwift,
-  SiR,
-  SiRuby,
-  SiCplusplus,
-} from "react-icons/si";
+import CodeLanguageIcon from "../../components/CodeLanguageIcon";
 import formatTime from "../../utils/formatTime";
 import { CodeLangTypes } from "../../context/profile/types";
 
@@ -23,25 +10,6 @@ type Props = {
   timeTyping: number;
   missCount: number;
   reset: () => void;
-};
-
-type CodeLanguageIconsType = {
-  [keyName in CodeLangTypes]: JSX.Element;
-};
-
-const codeLanguageIcons: CodeLanguageIconsType = {
-  Typescript: <SiTypescript size={30} />,
-  Javascript: <SiJavascript size={30} />,
-  Python: <SiPython size={30} />,
-  Go: <SiGo size={30} />,
-  Java: <SiJava size={30} />,
-  Kotlin: <SiKotlin size={30} />,
-  Php: <SiPhp size={30} />,
-  "C#": <SiCsharp size={30} />,
-  "C++": <SiCplusplus size={30} />,
-  Swift: <SiSwift size={30} />,
-  Ruby: <SiRuby size={30} />,
-  R: <SiR size={30} />,
 };
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -67,7 +35,7 @@ const GameHeader: React.VFC<Props> = ({ codeLanguage, timeTyping, missCount, res
             ミスタイプ: <strong>{missCount}回</strong>
           </Typography>
           <div className={classes.codeLanguageContainer}>
-            {codeLanguageIcons[codeLanguage]}
+            <CodeLanguageIcon codeLanguage={codeLanguage} size={30} />
             <Typography variant="h6" sx={{ marginLeft: "10px" }}>
               {codeLanguage}
             </Typography>
