@@ -1,7 +1,8 @@
 import React from "react";
-import { AppBar, Typography, Box, Toolbar, Theme } from "@mui/material";
+import { AppBar, Typography, Box, Toolbar, Theme, Tooltip, IconButton } from "@mui/material";
 import { Link } from "react-router-dom";
 import { makeStyles } from "@mui/styles";
+import { MdSettings } from "react-icons/md";
 import useAuthContext from "../hooks/useAuthContext";
 import AccountMenu from "./AccountMenu";
 
@@ -36,7 +37,15 @@ const Header = () => {
                   TypeCode
                 </Typography>
               </Box>
-              {authState.user && <AccountMenu />}
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <Tooltip title="Game Settings">
+                  <IconButton sx={{ display: "flex", flexDirection: "column" }} component={Link} to="/settings">
+                    <MdSettings size={34} />
+                    <span style={{ fontSize: "0.7rem", color: "white" }}>ゲーム設定</span>
+                  </IconButton>
+                </Tooltip>
+                {authState.user && <AccountMenu />}
+              </div>
             </Toolbar>
           </div>
         </div>

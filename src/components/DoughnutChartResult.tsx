@@ -2,6 +2,7 @@ import React from "react";
 import { Box } from "@mui/material";
 import "chartjs-plugin-doughnutlabel";
 import { Doughnut } from "react-chartjs-2";
+import theme from "../styles/Theme";
 
 type Props = {
   type: "accuracy" | "speed";
@@ -23,7 +24,7 @@ const DoughnutChartResult: React.VFC<Props> = ({ type, value }) => {
     datasets: [
       {
         data: fixedValues,
-        backgroundColor: ["#2bbeed", "white"],
+        backgroundColor: [type === "accuracy" ? theme.palette.success.light : theme.palette.primary.main, "white"],
       },
     ],
     labels: ["score", "max-score"],
@@ -56,7 +57,7 @@ const DoughnutChartResult: React.VFC<Props> = ({ type, value }) => {
   return (
     <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
       <Doughnut data={graphdata} options={doughnutOptions} />
-      <p>{type.slice(0, 1).toUpperCase() + type.slice(1)}</p>
+      <p>{type === "accuracy" ? "精度 (%)" : "速度 (kpm)"}</p>
     </Box>
   );
 };

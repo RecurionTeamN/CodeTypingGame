@@ -3,7 +3,7 @@ import { makeStyles } from "@mui/styles";
 import { Typography, Card, CardContent, Theme } from "@mui/material";
 import { toast } from "react-toastify";
 import GameHeader from "./GameHeader";
-import SuccessModal from "./SuccessModal";
+import GameFinishModal from "./GameFinishModal";
 import Header from "../../components/Header";
 import KeyboardHand from "./KeyboardHand";
 import { KeyData } from "../../data/keyboardData";
@@ -392,15 +392,17 @@ const GamePage: React.FC<Props> = ({ currGameData, setCurrGameData }) => {
           </div>
         </div>
       </div>
-      <SuccessModal
-        result={{
-          timeTyping,
-          missCount,
-          textLength: typingText.length,
-        }}
-        successModalOpen={successModalOpen}
-        successModalClose={() => setSuccessModalOpen(false)}
-      />
+      {successModalOpen && (
+        <GameFinishModal
+          result={{
+            speed: calSpeedKPM(typingText.length, timeTyping),
+            accuracy: calAccuracy(typingText.length, missCount),
+            codeTitle: userSettings.codeTitle,
+            textLength: typingText.length,
+          }}
+          successModalOpen={successModalOpen}
+        />
+      )}
     </>
   );
 };

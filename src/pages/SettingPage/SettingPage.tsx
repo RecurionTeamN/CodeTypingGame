@@ -84,13 +84,14 @@ const SettingPage = () => {
     if (!isShowingAdditionalSetting && language && codeDocuments) {
       if (code === "") {
         // コードタイトルが選択されていない場合、ランダムなコードでゲーム開始
+        const randomCode = codeDocuments[Math.floor(Math.random() * codeDocuments.length)];
         profileDispatch({
           type: "SET_USERSETTINGS",
           payload: {
             keyboardType: keyboard as KeyboardTypes,
             codeLang: language,
-            codeTitle,
-            codeContent: codeDocuments[Math.floor(Math.random() * codeDocuments.length)].codeContent,
+            codeTitle: randomCode.codeTitle,
+            codeContent: randomCode.codeContent,
           },
         });
       } else {
@@ -105,18 +106,16 @@ const SettingPage = () => {
           },
         });
       }
-      toast.success("Saved user settings!");
     } else if (isShowingAdditionalSetting) {
       profileDispatch({
         type: "SET_USERSETTINGS",
         payload: {
           keyboardType: keyboard as KeyboardTypes,
           codeLang: additionalSetting.language as CodeLangTypes,
-          codeTitle: "Additional Set Saved",
+          codeTitle: "",
           codeContent: additionalSetting.code,
         },
       });
-      toast.success("Saved user settings!");
     } else {
       // 必須項目が設定されていない場合
       toast.error("必須項目が選択されていません。");
