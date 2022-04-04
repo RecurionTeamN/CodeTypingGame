@@ -7,6 +7,7 @@ import CountUp from "react-countup";
 import DoughnutChartResult from "../../components/DoughnutChartResult";
 import theme from "../../styles/Theme";
 import TwitterShare from "../../components/TwitterShare";
+import resultToRank from "../../utils/resultToRank";
 
 type Result = {
   speed: number;
@@ -75,13 +76,27 @@ const GameFinishModal: React.VFC<Props> = ({ result, successModalOpen }) => {
           <span>文字数: </span>
           <CountUp start={0} end={result.textLength} duration={1.5} delay={0.5} />
         </Typography>
-        {result.codeTitle && (
-          <Typography align="center" variant="h6" color={theme.palette.grey[600]}>
-            今回のコード内容:
+        <div
+          style={{
+            display: "flex",
+            justifyContent: result.codeTitle ? "space-evenly" : "center",
+            width: "100%",
+            boxSizing: "border-box",
+          }}
+        >
+          {result.codeTitle && (
+            <Typography align="center" variant="h6" color={theme.palette.grey[600]} marginBottom="3%">
+              今回のコード内容:
+              <br />
+              {result.codeTitle}
+            </Typography>
+          )}
+          <Typography align="center" variant="h6" color={theme.palette.grey[600]} marginBottom="3%">
+            あなたは...
             <br />
-            {result.codeTitle}
+            <strong>{resultToRank(result.speed, result.accuracy)}</strong>
           </Typography>
-        )}
+        </div>
         <TwitterShare result={result} />
         <div style={{ width: "100%", display: "flex", justifyContent: "space-evenly", marginTop: "20px" }}>
           <Button variant="outlined" sx={{ width: "40%" }} component={Link} to="/dashboard">

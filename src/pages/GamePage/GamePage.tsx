@@ -53,14 +53,11 @@ const useStyles = makeStyles((theme: Theme) => ({
     display: "inline",
     fontSize: theme.typography.body1.fontSize,
   },
-  gameHeader: {
-    width: "60%",
-  },
   card: {
     backgroundColor: theme.palette.grey[100],
     borderRadius: "25px",
     width: "60%",
-    height: "40vh",
+    height: "45vh",
   },
   keyboardContainer: {
     width: "60%",
@@ -369,7 +366,7 @@ const GamePage: React.FC<Props> = ({ currGameData, setCurrGameData }) => {
       <div className={classes.mainContainer}>
         <Header />
         <div className={classes.container}>
-          <Card className={classes.gameHeader}>
+          <Card className={classes.card}>
             <GameHeader
               codeLanguage={userSettings.codeLang}
               timeTyping={timeTyping}
@@ -378,8 +375,6 @@ const GamePage: React.FC<Props> = ({ currGameData, setCurrGameData }) => {
               reset={reset}
               start={handleStart}
             />
-          </Card>
-          <Card className={classes.card}>
             <CardContent className={classes.cardContent} ref={scrollBox}>
               <div
                 id="code-content"

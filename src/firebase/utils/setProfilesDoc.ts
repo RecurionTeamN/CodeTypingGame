@@ -10,8 +10,6 @@ const setProfilesDoc = async (uid: string, bestScores: BestScores, userSettings:
       bestScores,
       userSettings,
     });
-    // eslint-disable-next-line no-console
-    console.log("profile doc added!");
   } catch (err) {
     toast.error((err as Error).message);
   }
