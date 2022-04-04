@@ -10,7 +10,6 @@ import ResultTable from "./ResultTable";
 import LineChart from "./LineChart";
 import GameStartCard from "./GameStartCard";
 import Loader from "../../components/Loader";
-import ResultTable from "./ResultTable";
 
 const useStyles = makeStyles((theme: Theme) => ({
   main: {
