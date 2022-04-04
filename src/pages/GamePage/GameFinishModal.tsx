@@ -7,6 +7,7 @@ import CountUp from "react-countup";
 import DoughnutChartResult from "../../components/DoughnutChartResult";
 import theme from "../../styles/Theme";
 import TwitterShare from "../../components/TwitterShare";
+import resultToRank from "../../utils/resultToRank";
 
 type Result = {
   speed: number;
@@ -44,7 +45,6 @@ const dropIn = {
 const useStyles = makeStyles(() => ({
   modal: {
     width: "clamp(35%, 500px, 90%)",
-    height: "min(55%, 500px)",
     margin: "auto",
     padding: "20px 20px",
     borderRadius: "12px",
@@ -75,14 +75,28 @@ const GameFinishModal: React.VFC<Props> = ({ result, successModalOpen }) => {
           <span>文字数: </span>
           <CountUp start={0} end={result.textLength} duration={1.5} delay={0.5} />
         </Typography>
-        {result.codeTitle && (
-          <Typography align="center" variant="h6" color={theme.palette.grey[600]}>
-            今回のコード内容:
+        <div
+          style={{
+            display: "flex",
+            justifyContent: result.codeTitle ? "space-evenly" : "center",
+            width: "100%",
+            boxSizing: "border-box",
+          }}
+        >
+          {result.codeTitle && (
+            <Typography align="center" variant="h6" color={theme.palette.grey[600]} marginBottom="3%">
+              今回のコード内容:
+              <br />
+              {result.codeTitle}
+            </Typography>
+          )}
+          <Typography align="center" variant="h6" color={theme.palette.grey[600]} marginBottom="3%">
+            あなたは...
             <br />
-            {result.codeTitle}
+            <strong>{resultToRank(result.speed, result.accuracy)}</strong>
           </Typography>
-        )}
-        <TwitterShare result={result} />
+        </div>
+        <TwitterShare result={result} rank={resultToRank(result.speed, result.accuracy)} />
         <div style={{ width: "100%", display: "flex", justifyContent: "space-evenly", marginTop: "20px" }}>
           <Button variant="outlined" sx={{ width: "40%" }} component={Link} to="/dashboard">
             戻る

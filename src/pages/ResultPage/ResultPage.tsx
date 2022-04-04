@@ -38,7 +38,7 @@ const ResultPage: React.FC<Props> = ({ currGameData }) => {
         >
           <SimpleResult language={userSettings.codeLang} accuracy={currGameData.accuracy} speed={currGameData.speed} />
           <div style={{ width: "50%" }}>
-            <h2>BestScores</h2>
+            <h2>Best Scores</h2>
             <ResultTable tableHeight={270} />
           </div>
         </Box>

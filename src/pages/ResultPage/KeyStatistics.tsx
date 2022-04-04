@@ -35,6 +35,7 @@ const useStyles = makeStyles(() => ({
   },
   keyboardContainer: {
     width: "70%",
+    cursor: "pointer",
   },
 }));
 

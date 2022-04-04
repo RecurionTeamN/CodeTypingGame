@@ -10,8 +10,6 @@ const addGameHistoryDoc = async (uid: string, accuracy: number, codeLang: string
     speed,
     uid,
   });
-  // eslint-disable-next-line no-console
-  console.log("added GameHistory doc!");
 };
 
 export default addGameHistoryDoc;

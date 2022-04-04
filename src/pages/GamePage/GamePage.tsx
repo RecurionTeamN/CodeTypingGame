@@ -53,12 +53,9 @@ const useStyles = makeStyles((theme: Theme) => ({
     display: "inline",
     fontSize: theme.typography.body1.fontSize,
   },
-  gameHeader: {
-    width: "60%",
-  },
   card: {
     backgroundColor: theme.palette.grey[100],
-    borderRadius: "25px",
+    borderRadius: "0 0 25px 25px",
     width: "60%",
     height: "40vh",
   },
@@ -66,6 +63,10 @@ const useStyles = makeStyles((theme: Theme) => ({
     width: "60%",
     display: "flex",
     justifyContent: "center",
+  },
+  gameHeader: {
+    width: "60%",
+    borderRadius: "25px 25px 0 0",
   },
   cardContent: {
     height: "300px",
