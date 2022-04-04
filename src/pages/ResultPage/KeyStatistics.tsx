@@ -47,8 +47,8 @@ const KeyStatistics: React.VFC<Props> = ({ data, keyboardType }) => {
       const pushCount = initialData[keyName].pushCount ?? 0;
       const missCount = initialData[keyName].missCount ?? 0;
       const timeSecCount = initialData[keyName].timeSecCount ?? 0;
-      calcData[keyName].accuracy = Math.floor(((pushCount - missCount) / pushCount) * 100);
-      calcData[keyName].speed = Math.floor((pushCount - missCount) / (timeSecCount / 60));
+      calcData[keyName].accuracy = Math.floor((pushCount / (pushCount + missCount)) * 100);
+      calcData[keyName].speed = Math.floor(pushCount / (timeSecCount / 60));
     });
     return calcData;
   };
@@ -115,10 +115,10 @@ const KeyStatistics: React.VFC<Props> = ({ data, keyboardType }) => {
   const statistics = Object.keys(keyData).map((keyName) => {
     const { speed, accuracy, pushCount, missCount, timeSecCount } = keyData[keyName];
     if (detailKeyArr.includes(keyName)) {
-      if (Number.isNaN(accuracy))
+      if (Number.isNaN(accuracy) || accuracy === 0)
         return (
           <div key={keyName}>
-            <strong>Key[{keyName}]</strong>
+            <strong>Key[ {keyName} ]</strong>
             <br />
             No Data
             <br />
@@ -127,13 +127,13 @@ const KeyStatistics: React.VFC<Props> = ({ data, keyboardType }) => {
         );
       return (
         <div key={keyName}>
-          <strong>Key[{keyName}]</strong>
+          <strong>Key[ {keyName} ]</strong>
           <br />
           精度:{accuracy}%, 速さ:{speed}kpm,
           <br />
-          押した回数:{pushCount}回, ミスした回数: {missCount ?? 0}回,
+          正解回数:{pushCount}回, ミス回数: {missCount ?? 0}回,
           <br />
-          総経過時間: {timeSecCount}秒,
+          平均経過時間: {Math.floor((1000 * (timeSecCount ?? 0)) / (pushCount ?? 0)) / 1000}秒,
           <br />
           <br />
         </div>
@@ -189,7 +189,7 @@ const KeyStatistics: React.VFC<Props> = ({ data, keyboardType }) => {
               m: 1,
             }}
           />
-          <p>{showMode === "speed" ? "早い" : "正確"}</p>
+          <p>{showMode === "speed" ? "速い" : "正確"}</p>
         </Box>
       </div>
       <div className={classes.rowFlexEnd}>
