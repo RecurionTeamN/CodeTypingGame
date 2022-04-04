@@ -1,6 +1,6 @@
 import React from "react";
 import { TwitterShareButton, TwitterIcon } from "react-share";
-import { Tooltip, IconButton } from "@mui/material";
+import { Tooltip } from "@mui/material";
 
 type Result = {
   speed: number;
@@ -14,16 +14,16 @@ type Props = {
 };
 
 const TwitterShare: React.VFC<Props> = ({ result }) => (
-  <TwitterShareButton
-    url="https://develop--recursion-team-n-typing-game.netlify.app/"
-    title={`TypeCodeでタイピング速度を計測しました! ${result.textLength}文字, 精度 ${result.accuracy} %, ${result.speed} KPM`}
-  >
-    <Tooltip title="結果をシェア" placement="top">
-      <IconButton>
+  <Tooltip title="結果をシェア" placement="top">
+    <div>
+      <TwitterShareButton
+        url="https://develop--recursion-team-n-typing-game.netlify.app/"
+        title={`TypeCodeでタイピング速度を計測しました! ${result.textLength}文字, 精度 ${result.accuracy} %, ${result.speed} KPM`}
+      >
         <TwitterIcon size={40} round />
-      </IconButton>
-    </Tooltip>
-  </TwitterShareButton>
+      </TwitterShareButton>
+    </div>
+  </Tooltip>
 );
 
 export default TwitterShare;
