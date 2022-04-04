@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { makeStyles } from "@mui/styles";
 import { ToggleButton, ToggleButtonGroup, Box, Card } from "@mui/material";
 import { KeyData } from "../../data/keyboardData";
-import Keyboard from "../../components/NewKeyboard";
+import Keyboard from "../../components/Keyboard";
 
 type Props = {
   data: KeyData;

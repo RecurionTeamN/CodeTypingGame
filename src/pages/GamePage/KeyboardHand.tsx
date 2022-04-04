@@ -1,6 +1,6 @@
 import React from "react";
 import { makeStyles } from "@mui/styles";
-import Keyboard from "../../components/NewKeyboard";
+import Keyboard from "../../components/Keyboard";
 import HandSVG from "../../components/HandSVG";
 
 const useStyles = makeStyles(() => ({

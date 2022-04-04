@@ -15,6 +15,7 @@ const SimpleResult: React.VFC<Props> = ({ language, accuracy, speed }) => (
       <DoughnutChartResult type="accuracy" value={accuracy} />
       <DoughnutChartResult type="speed" value={speed} />
     </Box>
+    <p>※速度の単位kpmとは1分あたりのタイピング数(keystrokes per minute)を表します。</p>
   </div>
 );
 
