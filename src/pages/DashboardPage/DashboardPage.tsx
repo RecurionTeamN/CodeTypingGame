@@ -9,14 +9,16 @@ import CalendarHeatmap from "./CalendarHeatmap";
 import LineChart from "./LineChart";
 import GameStartCard from "./GameStartCard";
 import Loader from "../../components/Loader";
+import ResultTable from "./ResultTable";
 
 const useStyles = makeStyles((theme: Theme) => ({
   main: {
     height: "100vh",
-    overflow: "hidden",
   },
   contentContainer: {
-    height: "80vh",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
   },
   calendarContainer: {
     display: "flex",
@@ -29,6 +31,9 @@ const useStyles = makeStyles((theme: Theme) => ({
     justifyContent: "center",
     alignItems: "center",
   },
+  gameStartContainer: {
+    width: "60%",
+  },
 }));
 
 const DashboardPage = () => {
@@ -40,7 +45,7 @@ const DashboardPage = () => {
     <div className={classes.main}>
       <Header />
       <div className={classes.contentContainer}>
-        {isPending ? (
+        {isPending && (
           <motion.div
             key="child"
             initial={{ opacity: 0 }}
@@ -51,38 +56,58 @@ const DashboardPage = () => {
           >
             <Loader />
           </motion.div>
-        ) : (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            <div className={classes.calendarContainer}>
-              {/* カレンダーヒートマップ */}
-              {gameHistoryDocuments && (
-                <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
-                  {[2, 1, 0].map((shift) => (
-                    <CalendarHeatmap
-                      gameHistoryDocuments={gameHistoryDocuments}
-                      currentYear={new Date().getFullYear()}
-                      currentMonth={new Date().getMonth() - shift}
-                      width={250}
-                    />
-                  ))}
-                </Box>
-              )}
+        )}
+        {!isPending && gameHistoryDocuments && (
+          <>
+            <div style={{ display: "flex", justifyContent: "center" }}>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.3 }}
+                className={classes.gameStartContainer}
+              >
+                <GameStartCard displayName={authState.user?.displayName} playCount={gameHistoryDocuments.length} />
+              </motion.div>
             </div>
-            {/* Card Grid */}
-            <Grid container spacing={2} paddingX="6%" marginTop="2%">
-              <Grid item xs={12} md={12} xl={6}>
-                <GameStartCard displayName={authState.user?.displayName} />
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.7 }}
+            >
+              <div className={classes.calendarContainer}>
+                {/* カレンダーヒートマップ */}
+                {gameHistoryDocuments && (
+                  <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
+                    {[2, 1, 0].map((shift) => (
+                      <CalendarHeatmap
+                        key={shift}
+                        gameHistoryDocuments={gameHistoryDocuments}
+                        currentYear={
+                          new Date().getMonth() - shift >= 0 ? new Date().getFullYear() : new Date().getFullYear() - 1
+                        }
+                        currentMonth={
+                          new Date().getMonth() - shift >= 0
+                            ? new Date().getMonth() - shift
+                            : 12 + (new Date().getMonth() - shift)
+                        }
+                        width={250}
+                      />
+                    ))}
+                  </Box>
+                )}
+              </div>
+              {/* Card Grid */}
+              <Grid container spacing={2} paddingX="8%" paddingY="10px">
+                <Grid item xs={12} md={12} xl={6}>
+                  <LineChart gameHistory={gameHistoryDocuments} />
+                </Grid>
+                <Grid item xs={12} md={12} xl={6}>
+                  <ResultTable tableHeight={300} />
+                </Grid>
               </Grid>
-              <Grid item xs={12} md={12} xl={6}>
-                <LineChart gameHistory={gameHistoryDocuments} />
-              </Grid>
-            </Grid>
-          </motion.div>
+            </motion.div>
+          </>
         )}
       </div>
     </div>

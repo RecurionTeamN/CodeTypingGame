@@ -54,7 +54,8 @@ const useStyles = makeStyles((theme: Theme) => ({
     fontSize: theme.typography.body1.fontSize,
   },
   card: {
-    backgroundColor: theme.palette.grey[50],
+    backgroundColor: theme.palette.grey[100],
+    borderRadius: "25px",
     width: "60%",
     height: "45vh",
   },

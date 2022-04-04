@@ -100,7 +100,7 @@ const LandingPage = () => {
         </Typography>
         <div>
           {codeLangs.map((language) => (
-            <span className={classes.codeIcon}>
+            <span key={language} className={classes.codeIcon}>
               <CodeLanguageIcon codeLanguage={language} size={40} />
             </span>
           ))}
