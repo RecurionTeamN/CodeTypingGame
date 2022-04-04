@@ -48,7 +48,10 @@ const Container = () => {
                 path="/results"
                 element={authState.user ? <ResultPage currGameData={currGameData} /> : <Navigate to="/" />}
               />
-              <Route path="/settings" element={authState.user ? <SettingPage /> : <Navigate to="/" />} />
+              <Route
+                path="/settings"
+                element={authState.user ? <SettingPage setCurrGameData={setCurrGameData} /> : <Navigate to="/" />}
+              />
               <Route path="/dashboard" element={authState.user ? <DashboardPage /> : <Navigate to="/" />} />
               <Route path="/" element={!authState.user ? <LandingPage /> : <Navigate to="/dashboard" />} />
               {/* <Route path="*" element={<404Page />} /> */}

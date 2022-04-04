@@ -6,6 +6,7 @@ import Header from "../../components/Header";
 import useGameHistoryCollection from "../../hooks/useGameHistoryCollection";
 import useAuthContext from "../../hooks/useAuthContext";
 import CalendarHeatmap from "./CalendarHeatmap";
+import ResultTable from "./ResultTable";
 import LineChart from "./LineChart";
 import GameStartCard from "./GameStartCard";
 import Loader from "../../components/Loader";
@@ -44,6 +45,7 @@ const DashboardPage = () => {
   return (
     <div className={classes.main}>
       <Header />
+
       <div className={classes.contentContainer}>
         {isPending && (
           <motion.div

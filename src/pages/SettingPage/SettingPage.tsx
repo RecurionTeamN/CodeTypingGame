@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 import theme from "../../styles/Theme";
 import MySelect from "./MySelect";
 import SettingModal from "./SettingModal";
-import { keyboardData } from "../../data/keyboardData";
+import { keyboardData, KeyData } from "../../data/keyboardData";
 import useProfileContext from "../../hooks/useProfileContext";
 import { codeLanguages, CodeLangTypes, KeyboardTypes } from "../../context/profile/types";
 import Header from "../../components/Header";
@@ -15,7 +15,17 @@ import { CodesDocument } from "../../firebase/Codes/types";
 const keyboards = Object.keys(keyboardData) as KeyboardTypes[];
 const languages = codeLanguages;
 
-const SettingPage = () => {
+type Props = {
+  setCurrGameData: React.Dispatch<
+    React.SetStateAction<{
+      speed: number;
+      accuracy: number;
+      keyData: KeyData;
+    }>
+  >;
+};
+
+const SettingPage: React.FC<Props> = ({ setCurrGameData }) => {
   const { profileState, dispatch: profileDispatch } = useProfileContext();
   const { userSettings } = profileState;
   const navigate = useNavigate();
@@ -82,13 +92,18 @@ const SettingPage = () => {
 
   const startGame = (): void => {
     if (!isShowingAdditionalSetting && language && codeDocuments) {
+      setCurrGameData({
+        speed: 0,
+        accuracy: 0,
+        keyData: keyboardData[keyboard],
+      });
       if (code === "") {
         // コードタイトルが選択されていない場合、ランダムなコードでゲーム開始
         const randomCode = codeDocuments[Math.floor(Math.random() * codeDocuments.length)];
         profileDispatch({
           type: "SET_USERSETTINGS",
           payload: {
-            keyboardType: keyboard as KeyboardTypes,
+            keyboardType: keyboard,
             codeLang: language,
             codeTitle: randomCode.codeTitle,
             codeContent: randomCode.codeContent,
@@ -99,7 +114,7 @@ const SettingPage = () => {
         profileDispatch({
           type: "SET_USERSETTINGS",
           payload: {
-            keyboardType: keyboard as KeyboardTypes,
+            keyboardType: keyboard,
             codeLang: language,
             codeTitle,
             codeContent: code,
@@ -107,10 +122,15 @@ const SettingPage = () => {
         });
       }
     } else if (isShowingAdditionalSetting) {
+      setCurrGameData({
+        speed: 0,
+        accuracy: 0,
+        keyData: keyboardData[keyboard],
+      });
       profileDispatch({
         type: "SET_USERSETTINGS",
         payload: {
-          keyboardType: keyboard as KeyboardTypes,
+          keyboardType: keyboard,
           codeLang: additionalSetting.language as CodeLangTypes,
           codeTitle: "",
           codeContent: additionalSetting.code,
@@ -125,10 +145,10 @@ const SettingPage = () => {
   };
 
   return (
-    <div>
+    <div style={{ height: "100vh" }}>
       <Header />
-      <Grid container spacing={0} direction="column" alignItems="center" justifyContent="center">
-        <Stack spacing={3} paddingTop={5}>
+      <Box sx={{ height: "80%", display: "flex", flexDirection: "column", alignItems: "center" }}>
+        <Stack spacing={3} sx={{ height: "100%", width: "50%", justifyContent: "center" }}>
           <Box sx={{ color: theme.palette.error.main }}>※必須項目：お使いのキーボードを選択下さい。</Box>
           <MySelect
             label="Keyboard Type"
@@ -175,10 +195,12 @@ const SettingPage = () => {
             <Button
               onClick={toggleModal}
               style={{
-                width: "30em",
+                width: "100%",
+                marginTop: "2rem",
+                marginBottom: "1rem",
               }}
             >
-              追加設定を表示
+              追加設定を編集する
             </Button>
           </Box>
 
@@ -200,7 +222,7 @@ const SettingPage = () => {
           )}
 
           {/* additional setting が適用されている場合、
-          default setting を使うモードに切り替えるためのボタンを表示する */}
+            default setting を使うモードに切り替えるためのボタンを表示する */}
           {additionalSetting.language !== "" && isShowingAdditionalSetting && (
             <Grid container direction="row" justifyContent="center" alignItems="center">
               <Grid item xs={6} paddingX={2}>
@@ -220,14 +242,14 @@ const SettingPage = () => {
                   style={{ width: "100%", height: "45px" }}
                   onClick={toggleSetting}
                 >
-                  デフォルト設定を適応
+                  追加設定を無効化
                 </Button>
               </Grid>
             </Grid>
           )}
 
           {/* additional setting の情報が設定されたあとに default setting モードに切り替えられている場合、
-          additional setting 設定に再度切替えるためのボタンを表示する */}
+            additional setting 設定に再度切替えるためのボタンを表示する */}
           {additionalSetting.language !== "" && !isShowingAdditionalSetting && (
             <Grid container direction="row" justifyContent="center" alignItems="center">
               <Grid item xs={6} paddingX={2}>
@@ -254,7 +276,7 @@ const SettingPage = () => {
             </Grid>
           )}
         </Stack>
-      </Grid>
+      </Box>
     </div>
   );
 };
