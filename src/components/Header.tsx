@@ -33,7 +33,12 @@ const Header = () => {
           <div className={classes.headerContent}>
             <Toolbar sx={{ justifyContent: "space-between" }}>
               <Box>
-                <Typography component={Link} to="/" variant="h3" sx={{ color: "inherit", textDecoration: "none" }}>
+                <Typography
+                  component={Link}
+                  to="/dashboard"
+                  variant="h3"
+                  sx={{ color: "inherit", textDecoration: "none" }}
+                >
                   TypeCode
                 </Typography>
               </Box>
