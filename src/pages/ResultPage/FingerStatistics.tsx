@@ -83,9 +83,9 @@ const FingerStatistics: React.VFC<Props> = ({ data }) => {
       .map((finger) => {
         const currFinData = fingerData[hand][finger];
         const accuracy = Math.floor(
-          ((currFinData.pushCountSum - currFinData.missCountSum) / currFinData.pushCountSum) * 100
+          (currFinData.pushCountSum / (currFinData.pushCountSum + currFinData.missCountSum)) * 100
         );
-        const speed = Math.floor((currFinData.pushCountSum - currFinData.missCountSum) / (currFinData.timeSecSum / 60));
+        const speed = Math.floor(currFinData.pushCountSum / (currFinData.timeSecSum / 60));
 
         if (showMode === "speed") {
           if (Number.isNaN(speed)) fingerData[hand][finger].color = "#e6e6e6";

@@ -53,10 +53,13 @@ const useStyles = makeStyles((theme: Theme) => ({
     display: "inline",
     fontSize: theme.typography.body1.fontSize,
   },
+  gameHeader: {
+    width: "60%",
+  },
   card: {
     backgroundColor: theme.palette.grey[50],
     width: "60%",
-    height: "45vh",
+    height: "40vh",
   },
   keyboardContainer: {
     width: "60%",
@@ -108,7 +111,6 @@ const GamePage: React.FC<Props> = ({ currGameData, setCurrGameData }) => {
   const [started, setStarted] = useState(false);
   const [timeTyping, setTimeTyping] = useState(0);
   const [successModalOpen, setSuccessModalOpen] = useState(false);
-
   const [keyData, setKeyData] = useState(currGameData.keyData);
   const [lastAnsTime, setLastAnsTime] = useState(0);
   const [nextFinger, setNextFinger] = useState<NextFinger>({ leftHand: null, rightHand: null });
@@ -145,6 +147,15 @@ const GamePage: React.FC<Props> = ({ currGameData, setCurrGameData }) => {
       [keyName]: targetData,
     }));
   };
+
+  const keyDataReset = () => {
+    Object.keys(keyData).forEach((keyName) => {
+      keyData[keyName].pushCount = 0;
+      keyData[keyName].missCount = 0;
+      keyData[keyName].timeSecCount = 0;
+    });
+  };
+
   const handleNextFinger = (Index: number) => {
     const targetData = typingText.charAt(Index) !== "\n" ? keyData[typingText.charAt(Index)] : keyData.Enter;
     if (targetData.keyType === "shift") {
@@ -266,27 +277,45 @@ const GamePage: React.FC<Props> = ({ currGameData, setCurrGameData }) => {
     }
   };
 
+  const handleStart = () => {
+    setStarted(true);
+    scrollBox.current?.scrollTo({ top: 0, behavior: "smooth" });
+    const startTime = new Date().getTime();
+    timer.current = setInterval(() => {
+      setTimeTyping(new Date().getTime() - startTime);
+    }, 10);
+    keyDataReset();
+    handleNextFinger(0);
+    handleNextKeys(0);
+    document.getElementById("code-content")?.focus();
+  };
+
+  // ゲームの初期化
+  const reset = () => {
+    clearInterval(timer.current as NodeJS.Timeout);
+    scrollBox.current?.scrollTo({ top: 0, behavior: "smooth" });
+    setTimeTyping(0);
+    setCurrentIndex(0);
+    setIsMissType(false);
+    setMissCount(0);
+    setFinished(false);
+    setStarted(false);
+    keyDataReset();
+    setLastAnsTime(0);
+    handleNextFinger(0);
+    handleNextKeys(0);
+  };
+
   const handleKeyPress = (e: React.KeyboardEvent<HTMLDivElement>) => {
     e.preventDefault();
 
-    if (finished) return;
-    if (!started) {
-      setStarted(true);
-      scrollBox.current?.scrollTo({ top: 0, behavior: "smooth" });
-
-      const startTime = new Date().getTime();
-      timer.current = setInterval(() => {
-        setTimeTyping(new Date().getTime() - startTime);
-      }, 10);
-    }
-
-    addKeyPushCount(e.key);
+    if (finished || !started) return;
 
     // 改行の処理
     if (typingText[currentIndex] === "\n") {
       if (e.key === "Enter") {
         setIsMissType(false);
-
+        addKeyPushCount(e.key);
         addKeyTimeCount(e.key);
         setLastAnsTime(timeTyping);
 
@@ -313,7 +342,7 @@ const GamePage: React.FC<Props> = ({ currGameData, setCurrGameData }) => {
     } else if (e.key === typingText[currentIndex]) {
       setIsMissType(false);
       setCurrentIndex(currentIndex + 1);
-
+      addKeyPushCount(e.key);
       addKeyTimeCount(e.key);
       setLastAnsTime(timeTyping);
 
@@ -330,22 +359,6 @@ const GamePage: React.FC<Props> = ({ currGameData, setCurrGameData }) => {
     }
   };
 
-  // ゲームの初期化
-  const reset = () => {
-    clearInterval(timer.current as NodeJS.Timeout);
-    scrollBox.current?.scrollTo({ top: 0, behavior: "smooth" });
-    setTimeTyping(0);
-    setCurrentIndex(0);
-    setIsMissType(false);
-    setMissCount(0);
-    setFinished(false);
-    setStarted(false);
-    setKeyData(currGameData.keyData);
-    setLastAnsTime(0);
-    handleNextFinger(0);
-    handleNextKeys(0);
-  };
-
   // Enterを押すべき時に何も表示されないと分かりづらいので追加
   let currText = typingText[currentIndex];
   if (currText === "\n") currText = "↩︎\n";
@@ -355,15 +368,25 @@ const GamePage: React.FC<Props> = ({ currGameData, setCurrGameData }) => {
       <div className={classes.mainContainer}>
         <Header />
         <div className={classes.container}>
-          <Card className={classes.card}>
+          <Card className={classes.gameHeader}>
             <GameHeader
               codeLanguage={userSettings.codeLang}
               timeTyping={timeTyping}
               missCount={missCount}
+              started={started}
               reset={reset}
+              start={handleStart}
             />
+          </Card>
+          <Card className={classes.card}>
             <CardContent className={classes.cardContent} ref={scrollBox}>
-              <div onKeyPress={(e) => handleKeyPress(e)} tabIndex={-1} className={classes.textBox} aria-hidden="true">
+              <div
+                id="code-content"
+                onKeyPress={(e) => handleKeyPress(e)}
+                tabIndex={-1}
+                className={classes.textBox}
+                aria-hidden="true"
+              >
                 {/* for correct letters */}
                 <Typography className={classes.greenFont}>{typingText.slice(0, currentIndex)}</Typography>
 

@@ -33,6 +33,7 @@ const useStyles = makeStyles(() => ({
     visibility: "hidden",
   },
   heatmapLabel: {
+    color: "gray",
     textAlign: "center",
     padding: 0,
     margin: 0,
@@ -65,6 +66,7 @@ const generateDailyHistory = (
 
   dailyHistory[dailyHistory.length] = { month, dayofweek, weekOfMonth, day: date.getDate(), times };
   date.setDate(date.getDate() + 1);
+  if (date.getDay() + 1 === 1) weekOfMonth += 1;
 
   // 翌月の1日まで繰り返す
   let j = dailyHistory.length;
@@ -183,6 +185,7 @@ const CalendarHeatmap: React.VFC<CalendarHeatmapProps> = ({
       .attr("y", 0)
       .style("text-anchor", "middle")
       .style("font-size", xScale.bandwidth() * 0.35)
+      .style("fill", "gray")
       .attr("transform", `translate(${rectSize / 2}, -8)`);
 
     const drawHeatmap = () => {
@@ -193,14 +196,16 @@ const CalendarHeatmap: React.VFC<CalendarHeatmapProps> = ({
         .append("rect")
         .attr("x", (d: Dailydata) => xScale(d.dayofweek.toString()) as number)
         .attr("y", (d: Dailydata) => yScale(d.weekOfMonth.toString()) as number)
+        .attr("rx", 1.5)
+        .attr("ry", 1.5)
         .attr("width", xScale.bandwidth())
         .attr("height", yScale.bandwidth())
         .style("stroke", "black")
-        .style("stroke-width", 0.5)
+        .style("stroke-width", 0.4)
         .style("stroke-opacity", 1)
         .style("fill", (d: Dailydata) => {
           let colorDomain = d.times;
-          if (colorDomain > 10) colorDomain = 10;
+          if (colorDomain > 5) colorDomain = 5;
           return colorScale(colorDomain);
         })
         .on("mouseover", (event: Event, d: Dailydata) => {
@@ -217,7 +222,7 @@ const CalendarHeatmap: React.VFC<CalendarHeatmapProps> = ({
 
   return (
     <div style={{ position: "relative", width: w + margin.left + margin.right }} ref={chartParent}>
-      <h4 className={classes.heatmapLabel}>{monthEng[currentMonth]}</h4>
+      <p className={classes.heatmapLabel}>{monthEng[currentMonth]}</p>
       <div id={`tooltip${currentMonth}`} className={classes.tooltip} />
       <svg ref={chart} />
     </div>

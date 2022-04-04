@@ -6,6 +6,7 @@ import Header from "../../components/Header";
 import useGameHistoryCollection from "../../hooks/useGameHistoryCollection";
 import useAuthContext from "../../hooks/useAuthContext";
 import CalendarHeatmap from "./CalendarHeatmap";
+import ResultTable from "./ResultTable";
 import LineChart from "./LineChart";
 import GameStartCard from "./GameStartCard";
 import Loader from "../../components/Loader";
@@ -39,6 +40,7 @@ const DashboardPage = () => {
   return (
     <div className={classes.main}>
       <Header />
+
       <div className={classes.contentContainer}>
         {isPending ? (
           <motion.div
@@ -64,9 +66,16 @@ const DashboardPage = () => {
                 <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
                   {[2, 1, 0].map((shift) => (
                     <CalendarHeatmap
+                      key={shift}
                       gameHistoryDocuments={gameHistoryDocuments}
-                      currentYear={new Date().getFullYear()}
-                      currentMonth={new Date().getMonth() - shift}
+                      currentYear={
+                        new Date().getMonth() - shift >= 0 ? new Date().getFullYear() : new Date().getFullYear() - 1
+                      }
+                      currentMonth={
+                        new Date().getMonth() - shift >= 0
+                          ? new Date().getMonth() - shift
+                          : 12 + (new Date().getMonth() - shift)
+                      }
                       width={250}
                     />
                   ))}
@@ -80,6 +89,9 @@ const DashboardPage = () => {
               </Grid>
               <Grid item xs={12} md={12} xl={6}>
                 <LineChart gameHistory={gameHistoryDocuments} />
+              </Grid>
+              <Grid item xs={12} md={12} xl={6}>
+                <ResultTable tableHeight={200} />
               </Grid>
             </Grid>
           </motion.div>
