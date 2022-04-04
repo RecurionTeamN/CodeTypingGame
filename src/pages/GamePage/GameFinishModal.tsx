@@ -44,7 +44,7 @@ const dropIn = {
 const useStyles = makeStyles(() => ({
   modal: {
     width: "clamp(35%, 500px, 90%)",
-    height: "min(50%, 800px)",
+    height: "min(55%, 500px)",
     margin: "auto",
     padding: "20px 20px",
     borderRadius: "12px",
