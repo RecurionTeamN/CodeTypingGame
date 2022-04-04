@@ -45,7 +45,6 @@ const dropIn = {
 const useStyles = makeStyles(() => ({
   modal: {
     width: "clamp(35%, 500px, 90%)",
-    height: "min(55%, 500px)",
     margin: "auto",
     padding: "20px 20px",
     borderRadius: "12px",
@@ -97,7 +96,7 @@ const GameFinishModal: React.VFC<Props> = ({ result, successModalOpen }) => {
             <strong>{resultToRank(result.speed, result.accuracy)}</strong>
           </Typography>
         </div>
-        <TwitterShare result={result} />
+        <TwitterShare result={result} rank={resultToRank(result.speed, result.accuracy)} />
         <div style={{ width: "100%", display: "flex", justifyContent: "space-evenly", marginTop: "20px" }}>
           <Button variant="outlined" sx={{ width: "40%" }} component={Link} to="/dashboard">
             戻る
