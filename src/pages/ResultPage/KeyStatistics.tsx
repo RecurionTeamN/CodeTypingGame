@@ -47,24 +47,25 @@ const KeyStatistics: React.VFC<Props> = ({ data, keyboardType }) => {
       const pushCount = initialData[keyName].pushCount ?? 0;
       const missCount = initialData[keyName].missCount ?? 0;
       const timeSecCount = initialData[keyName].timeSecCount ?? 0;
-      calcData[keyName].accuracy = Math.floor((pushCount / (pushCount + missCount)) * 100);
-      calcData[keyName].speed = Math.floor(pushCount / (timeSecCount / 60));
+      calcData[keyName].accuracy = pushCount !== 0 ? Math.floor((pushCount / (pushCount + missCount)) * 100) : 0;
+      calcData[keyName].speed = pushCount !== 0 ? Math.floor(pushCount / (timeSecCount / 60)) : 0;
     });
     return calcData;
   };
 
   const calcEachKeyButtonColor = (calcData: KeyData) => {
-    const usedKeyArr = Object.keys(calcData).filter((keyName) => !Number.isNaN(calcData[keyName].accuracy));
+    const keyArr = Object.keys(calcData);
     const colorMap: { [key in "speed" | "accuracy"]: Color } = { speed: {}, accuracy: {} };
-    usedKeyArr
+    keyArr
       .filter((keyName) => calcData[keyName].keyType === "default")
       .forEach((keyName) => {
-        const speedArr = [calcData[keyName].speed as number];
-        const accuracyArr = [calcData[keyName].accuracy as number];
-        usedKeyArr
+        const speedArr = calcData[keyName].speed !== 0 ? [calcData[keyName].speed as number] : [];
+        const accuracyArr = calcData[keyName].accuracy !== 0 ? [calcData[keyName].accuracy as number] : [];
+        keyArr
           .filter(
             (k) =>
               calcData[k].keyType !== "default" &&
+              calcData[k].accuracy !== 0 &&
               calcData[keyName].position[0] === calcData[k].position[0] &&
               calcData[keyName].position[1] === calcData[k].position[1]
           )
@@ -73,17 +74,23 @@ const KeyStatistics: React.VFC<Props> = ({ data, keyboardType }) => {
             accuracyArr.push(calcData[k].accuracy as number);
           });
         const avgSpeed =
-          speedArr.reduce((previousValue, currentValue) => previousValue + currentValue) / speedArr.length;
+          speedArr.length === 0
+            ? 0
+            : speedArr.reduce((previousValue, currentValue) => previousValue + currentValue) / speedArr.length;
         const avgAccuracy =
-          accuracyArr.reduce((previousValue, currentValue) => previousValue + currentValue) / accuracyArr.length;
+          accuracyArr.length === 0
+            ? 0
+            : accuracyArr.reduce((previousValue, currentValue) => previousValue + currentValue) / accuracyArr.length;
 
-        if (avgSpeed >= 200) colorMap.speed[keyName] = "#0000FF";
+        if (avgSpeed <= 0) colorMap.speed[keyName] = "#FFFFFF";
+        else if (avgSpeed >= 200) colorMap.speed[keyName] = "#0000FF";
         else if (avgSpeed >= 150) colorMap.speed[keyName] = "#0099FF";
         else if (avgSpeed >= 100) colorMap.speed[keyName] = "#00CCFF";
         else if (avgSpeed >= 50) colorMap.speed[keyName] = "#00FFFF";
         else colorMap.speed[keyName] = "#CCFFFF";
 
-        if (avgAccuracy >= 95) colorMap.accuracy[keyName] = "#0000FF";
+        if (avgAccuracy <= 0) colorMap.accuracy[keyName] = "#FFFFFF";
+        else if (avgAccuracy >= 95) colorMap.accuracy[keyName] = "#0000FF";
         else if (avgAccuracy >= 90) colorMap.accuracy[keyName] = "#0099FF";
         else if (avgAccuracy >= 80) colorMap.accuracy[keyName] = "#00CCFF";
         else if (avgAccuracy >= 70) colorMap.accuracy[keyName] = "#00FFFF";
@@ -102,13 +109,13 @@ const KeyStatistics: React.VFC<Props> = ({ data, keyboardType }) => {
   const handleDetailKeyArr = (keyName: string) => {
     const keyArr = [];
     keyArr.push(keyName);
-    const anotherKey = Object.keys(data).find(
+    const anotherKeys = Object.keys(data).filter(
       (k) =>
         data[k].keyType !== "default" &&
         data[keyName].position[0] === data[k].position[0] &&
         data[keyName].position[1] === data[k].position[1]
     );
-    if (anotherKey !== undefined) keyArr.push(anotherKey);
+    if (anotherKeys.length !== 0) anotherKeys.forEach((anotherKey) => keyArr.push(anotherKey));
     setDetailKeyArr(keyArr);
   };
 
