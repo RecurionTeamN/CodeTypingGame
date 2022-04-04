@@ -132,7 +132,7 @@ const SettingModal: React.VFC<Props> = ({
             <Box sx={{ color: theme.palette.error.main }}>
               ※必須項目：設定されるコードのプログラミング言語を選択下さい。
             </Box>
-            <MySelect label="Language" options={languages} onchange={handleAdditionalLanguageChange} />
+            <MySelect label="Language" options={languages} defaultValue="" onchange={handleAdditionalLanguageChange} />
             <Box sx={{ color: theme.palette.success.main }}>
               任意項目：使用するコードの長さを制限することができます。
             </Box>
@@ -142,6 +142,17 @@ const SettingModal: React.VFC<Props> = ({
               label="Max number of letters"
               InputProps={{ inputProps: { min: 0 } }}
               onChange={handleMaxLenChange}
+              onKeyPress={(event) => {
+                // 1文字目での0入力(最初の１文字を入力するとき、maxLef.currentはobject型を返す)と、Textfield のタイププロパティ（numberを選択時）許可される "- . +" の記号をここで無効化する
+                if (
+                  ((typeof maxLenRef.current === "object" || maxLenRef.current === "") && event.key === "0") ||
+                  event?.key === "-" ||
+                  event?.key === "+" ||
+                  event?.key === "."
+                ) {
+                  event.preventDefault();
+                }
+              }}
             />
 
             <PersonalCodeImport
