@@ -266,7 +266,7 @@ const GamePage: React.FC<Props> = ({ currGameData, setCurrGameData }) => {
       }
       // 今回の言語のベストスコアに値が保存されている場合
       else if (currBestScore.accuracy && currBestScore.speed) {
-        if (currBestScore.accuracy < accuracy && currBestScore.speed < speed) {
+        if (currBestScore.accuracy + 0.5 * currBestScore.speed < accuracy + 0.5 * speed) {
           updatedBestScores = { ...updatedBestScores, [currLanguage]: { accuracy, speed } };
           profileDispatch({ type: "SET_BESTSCORES", payload: updatedBestScores as BestScores });
         }
