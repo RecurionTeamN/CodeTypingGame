@@ -1,4 +1,5 @@
 import { FirebaseOptions, FirebaseApp, initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 import { getAuth } from "firebase/auth";
@@ -24,6 +25,9 @@ export const auth = getAuth(app);
 
 // Initialize Firebase Firestore
 export const db = getFirestore(app);
+
+// Initialize Analytics and get a reference to the service
+export const analytics = getAnalytics(app);
 
 // Initialize Timestamp
 export const timestamp = Timestamp;

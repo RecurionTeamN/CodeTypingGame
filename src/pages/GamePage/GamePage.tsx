@@ -57,7 +57,8 @@ const useStyles = makeStyles((theme: Theme) => ({
     width: "60%",
   },
   card: {
-    backgroundColor: theme.palette.grey[50],
+    backgroundColor: theme.palette.grey[100],
+    borderRadius: "25px",
     width: "60%",
     height: "40vh",
   },

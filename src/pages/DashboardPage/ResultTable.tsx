@@ -1,5 +1,6 @@
 import React from "react";
 import { DataGrid, GridColDef, GridOverlay } from "@mui/x-data-grid";
+import { Card } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import useProfileContext from "../../hooks/useProfileContext";
 
@@ -8,11 +9,17 @@ type ResultTableProps = {
 };
 
 const useStyles = makeStyles({
+  card: {
+    padding: "10px 10px",
+    borderRadius: "25px",
+  },
   dataGrid: {
+    borderRadius: "25px",
     "&.MuiDataGrid-root .MuiDataGrid-columnHeader:focus, &.MuiDataGrid-root .MuiDataGrid-cell:focus": {
       outline: "none",
     },
     "& .MuiDataGrid-columnHeaders": {
+      borderRadius: "25px 25px 0 0",
       backgroundColor: "rgba(137, 189, 222, 0.6)",
       color: "black",
     },
@@ -72,12 +79,12 @@ const ResultTable: React.VFC<ResultTableProps> = ({ tableHeight }) => {
 
   const customNoRowsOverlay = () => (
     <GridOverlay>
-      <div>No Data</div>
+      <div>ゲーム履歴がありません</div>
     </GridOverlay>
   );
 
   return (
-    <div style={{ display: "flex", height: tableHeight }}>
+    <Card variant="outlined" className={classes.card} sx={{ height: tableHeight }}>
       <DataGrid
         rows={profileStateforTableWithoutEmptyData.sort((prev, curr) => prev.codeLang.localeCompare(curr.codeLang))}
         columns={columns}
@@ -90,7 +97,7 @@ const ResultTable: React.VFC<ResultTableProps> = ({ tableHeight }) => {
           NoRowsOverlay: customNoRowsOverlay,
         }}
       />
-    </div>
+    </Card>
   );
 };
 
