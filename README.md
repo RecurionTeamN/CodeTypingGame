@@ -5,7 +5,7 @@
 </h1>
 
 <h3 align="center">A typing game made for programmers, <br /> built with Typescript, React and Firebase.</h3>
-<p align="center">recursion-typecode.netlify.app/</p>
+<p align="center">https://recursion-typecode.netlify.app/</p>
 <br />
 
 <div align="center">
